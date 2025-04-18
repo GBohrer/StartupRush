@@ -68,6 +68,10 @@ std::vector<std::shared_ptr<UIObject>>& Manager::GetUIObjects() {
     return this->currentState.screenObjs;
 }
 
+Tournament& Manager::GetRushGame() {
+    return this->rushGame;
+}
+
 void Manager::SetCurrentState(STATE state) {
     DellState s = states.at(state);
     this->currentState = s;
@@ -83,18 +87,20 @@ bool Manager::HasMessages() {
 }
 
 bool Manager::isPromptsOk() {
+    bool needMessage = false;
+
     for (const auto& obj : GetUIObjects()) {
         PromptBox* pb = dynamic_cast<PromptBox*>(obj.get());
-        if (pb) {
-            if (pb->GetCurrentText().empty()) {
-                CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_BOTTOM));
-                return false;
-            }
-            return true;
-        } else { continue; }
+        if (pb && pb->GetCurrentText().empty()) needMessage = true;
     }
-    return true;
+    if(needMessage) {
+        CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_BOTTOM));
+        return false;
+    } else {
+        return true;
+    }
 }
+
 
 void Manager::ClearPromtps() {
     for (const auto& obj : GetUIObjects()) {
@@ -103,7 +109,24 @@ void Manager::ClearPromtps() {
     }
 }
 
+bool Manager::isTournamentReady() {
+    int total = rushGame.GetTotalStartups();
+
+    if (total < 4) {
+        CreateMessage(PopUpMessage("Adicione mais Startups!", SCREEN_POS_CENTER_BOTTOM));
+        return false;
+    } else if (!(total % 2 == 0)) {
+        CreateMessage(PopUpMessage("Adicione mais 1 Startup!", SCREEN_POS_CENTER_BOTTOM));
+        return false;
+    } else if (total > 8) {
+        CreateMessage(PopUpMessage("Máximo de Startups atingido!", SCREEN_POS_CENTER_BOTTOM));
+        return false; 
+    } else { return true; }
+}
+
 void Manager::CreateStartup() {
+
+    if (rushGame.GetTotalStartups() == 8) return;
 
     PromptBox* pb;
     pb = dynamic_cast<PromptBox*>(GetUIObjects().at(2).get());
@@ -177,18 +200,19 @@ void Handle_ENTRY(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
             case BoxID::NEW_STARTUP:
-                // Checar se max_startups >= 8
-                if(!manager.HasMessages()){
+                if(!(manager.GetRushGame().GetTotalStartups() == 8)) {
                     manager.SetCurrentState(STATE::CREATE_STARTUP);
                     return;
+                } else {
+                    manager.CreateMessage(PopUpMessage("Limite de Startups atingido!", SCREEN_POS_CENTER_BOTTOM));
                 }
                 break;
             case BoxID::BEGIN_TOURNAMENT:
-                // Checar se startups.size() >= 4 && startups.size() % 2 == 0
-                if(!manager.HasMessages()){
+                if(manager.isTournamentReady()){
                     //manager.SetCurrentState(STATE::TOURNAMENT_01);
                     return;
                 }
+                break;
             case BoxID::EXIT:
                 manager.SetCurrentState(STATE::LEAVING);
                 return;

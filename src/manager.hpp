@@ -45,6 +45,8 @@ class Manager {
         void Close();
 
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
+        Tournament& GetRushGame();
+
         void SetCurrentState(STATE state);
 
         void CreateMessage(PopUpMessage m);
@@ -53,6 +55,7 @@ class Manager {
         bool isPromptsOk();
         void ClearPromtps();
 
+        bool isTournamentReady();
         void CreateStartup();
 
         

@@ -96,6 +96,9 @@ class Tournament {
     public:
         Tournament() {}
 
+        static const uint8_t min_startups = 4;
+        static const uint8_t max_startups = 8;
+
         //bool AddBattleEvent() {}
 
         void AddStartup(Startup s) {
@@ -111,13 +114,14 @@ class Tournament {
             }
         }
 
+        int GetTotalStartups() {
+            return startups.size();
+        }
+
     private:
         std::vector<BattleEvent> events;
         std::vector<std::tuple<Startup, uint16_t>> startups;
         std::vector<Battle> Battles;
-
-        static const uint8_t min_startups = 4;
-        static const uint8_t max_startups = 8;
 };
 
 
