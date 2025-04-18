@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "interface.hpp"
+#include "classes.hpp"
 
 #define POP_UP_MESSAGES_MAX     2
 
@@ -48,12 +49,20 @@ class Manager {
 
         void CreateMessage(PopUpMessage m);
         bool HasMessages();
+
+        bool isPromptsOk();
+        void ClearPromtps();
+
+        void CreateStartup();
+
         
     private:
         std::unordered_map<STATE, DellState> states;
         std::vector<PopUpMessage> messages;
         DellState currentState;
         bool run;
+
+        Tournament rushGame;
 };
 
 // Interface
@@ -71,7 +80,6 @@ void Handle_TOURNAMENT_03(Manager& manager);
 void Handle_LEAVING(Manager& manager);
 
 extern std::map<STATE, std::function<void(Manager&)>> stateHandlers;
-
 std::unordered_map<STATE, DellState> StatesInit ();
 
 #endif

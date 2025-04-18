@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <cstdint>
 
 #include "manager.hpp"
 #include "interface.hpp"
@@ -19,14 +20,13 @@ void Manager::Init() {
     this->run = true;
     this->states = StatesInit();
     this->currentState = states.at(STATE::ENTRY);
-
-    // iniciar BattleEvents
-    // Criar torneio vazio
+    this->rushGame = Tournament();
 }
 
 void Manager::Update() {
 
     if(IsKeyPressed(KEY_ESCAPE)) this->run = false;
+    if(IsKeyPressed(KEY_P)) rushGame.PrintStartups();
 
     if (stateHandlers.find(this->currentState.state) != stateHandlers.end()) {
         stateHandlers[this->currentState.state](*this);
@@ -82,7 +82,41 @@ bool Manager::HasMessages() {
     return (int)this->messages.size() > 0;
 }
 
+bool Manager::isPromptsOk() {
+    for (const auto& obj : GetUIObjects()) {
+        PromptBox* pb = dynamic_cast<PromptBox*>(obj.get());
+        if (pb) {
+            if (pb->GetCurrentText().empty()) {
+                CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_BOTTOM));
+                return false;
+            }
+            return true;
+        } else { continue; }
+    }
+    return true;
+}
 
+void Manager::ClearPromtps() {
+    for (const auto& obj : GetUIObjects()) {
+        PromptBox* pb = dynamic_cast<PromptBox*>(obj.get());
+        if (pb) pb->ResetText();
+    }
+}
+
+void Manager::CreateStartup() {
+
+    PromptBox* pb;
+    pb = dynamic_cast<PromptBox*>(GetUIObjects().at(2).get());
+    std::string name = pb->GetCurrentText();
+
+    pb = dynamic_cast<PromptBox*>(GetUIObjects().at(4).get());
+    std::string slogan = pb->GetCurrentText();
+
+    pb = dynamic_cast<PromptBox*>(GetUIObjects().at(6).get());
+    uint16_t year = static_cast<uint16_t>(std::atoi(pb->GetCurrentText().c_str()));
+
+    rushGame.AddStartup(Startup(name, slogan, year));
+}
 
 // INTERFACE
 
@@ -128,9 +162,6 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
     }
 }
 
-bool Check_Prompts(Manager& manager) {
-
-}
 
 // State Handlers
 std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
@@ -172,13 +203,15 @@ void Handle_CREATE_STARTUP(Manager& manager) {
         switch(tb->GetID()) {
 
             case BoxID::CREATE:
-                // Checar prompts
-                if(!manager.HasMessages()){
-                    // Salvar dados e apagar prompts
+                if (manager.isPromptsOk()) {
+                    manager.CreateStartup();
+                    manager.ClearPromtps();
                     manager.SetCurrentState(STATE::ENTRY);
                 }
                 return;
+
             case BoxID::BACK:
+                manager.ClearPromtps();
                 manager.SetCurrentState(STATE::ENTRY);
                 return;
             default:

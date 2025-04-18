@@ -5,13 +5,14 @@
 #include <cstdint>
 #include <vector>
 #include <tuple>
+#include <iostream>
 
 class Startup {
     public:
-        Startup() : name(""), slogan(""), year(0) {}
+        Startup() : name(""), slogan(""), year(0), is_competing(true) {}
 
         Startup(std::string n, std::string s, uint16_t y)
-        : name(n), slogan(s), year(y) {}
+        : name(n), slogan(s), year(y), is_competing(true) {}
 
         // Getters
         std::string getName() const {
@@ -26,10 +27,15 @@ class Startup {
             return year;
         }
 
+        bool IsCompeting() const {
+            return is_competing;
+        }
+
     private:
         std::string name;
         std::string slogan;
         uint16_t year;
+        bool is_competing;
 };
 
 enum EventID {
@@ -86,24 +92,32 @@ class Battle {
         std::tuple<Startup, std::vector<BattleEvent>> startup_b;
 };
 
-class Round {
-    public:
-
-    private:
-        std::vector<Battle> battles;
-};
-
 class Tournament {
     public:
+        Tournament() {}
 
+        //bool AddBattleEvent() {}
+
+        void AddStartup(Startup s) {
+            startups.emplace_back(std::make_tuple(s, 70));
+        }
+
+        void PrintStartups() {
+            for (const auto& [startup, value] : startups) {
+                std::cout << "Nome: " << startup.getName() << std::endl;
+                std::cout << "Slogan: " << startup.getSlogan() << std::endl;
+                std::cout << "Year: " << startup.getYear() << std::endl;
+                printf("\n");
+            }
+        }
 
     private:
-        uint8_t min_startups = 4;
-        uint8_t max_startups = 8;
         std::vector<BattleEvent> events;
         std::vector<std::tuple<Startup, uint16_t>> startups;
-        std::vector<Startup> startups_alive;
-        std::vector<Round> rounds;
+        std::vector<Battle> Battles;
+
+        static const uint8_t min_startups = 4;
+        static const uint8_t max_startups = 8;
 };
 
 

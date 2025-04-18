@@ -81,7 +81,7 @@ class PopUpMessage : public SimpleText {
         float timeLeft; 
         float duration;
 
-        PopUpMessage(const std::string& text, Vector2 position, float duration = 3.0f, Color color = LIGHTGRAY)
+        PopUpMessage(const std::string& text, Vector2 position, float duration = 3.0f, Color color = RED)
         : SimpleText(text, TEXTBOX_FONTSIZE - 10, position, false, false), timeLeft(duration), duration(duration) {}
 
     void Update() {
