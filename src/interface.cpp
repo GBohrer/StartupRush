@@ -130,3 +130,18 @@ void PromptBox::Draw() {
     Vector2 textPos = {pos.x + PROMPTBOX_PADDING, pos.y + (height - TEXTBOX_FONTSIZE) / 2};
     DrawText(currentText.c_str(), textPos.x, textPos.y, TEXTBOX_FONTSIZE, color);
 }
+
+
+void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups) {
+    
+    int offset = 0;
+    for(const auto& [startup, value] : startups) {
+        const char *name = (startup.getName()).c_str();
+        const char *points = (std::to_string(value)).c_str();
+        DrawText(name, SCREEN_POS_CENTER_TOP.x, SCREEN_POS_CENTER_1.y + offset, TEXTBOX_FONTSIZE, LIGHTGRAY);
+        DrawText(points, SCREEN_POS_CENTER_TOP.x + MeasureText(name, TEXTBOX_FONTSIZE) + 20, SCREEN_POS_CENTER_1.y + offset, TEXTBOX_FONTSIZE, LIGHTGRAY);
+
+        offset += TEXTBOX_FONTSIZE + 5;
+    }
+
+}

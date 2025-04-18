@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <raylib.h>
+
+#include "classes.hpp"
 
 #define SCREEN_WIDTH                1280
 #define SCREEN_HEIGHT               720
@@ -29,8 +32,8 @@ const Vector2 SCREEN_POS_CENTER_5            = {(float)SCREEN_WIDTH / 2, (float)
 const Vector2 SCREEN_POS_CENTER_TOP          = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - SCREEN_HEIGHT / 3};
 const Vector2 SCREEN_POS_CENTER              = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2};
 const Vector2 SCREEN_POS_CENTER_BOTTOM       = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
-const Vector2 SCREEN_POS_CENTER_BOTTOM_LEFT  = {(float)SCREEN_WIDTH / 2 - 300, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
-const Vector2 SCREEN_POS_CENTER_BOTTOM_RIGHT = {(float)SCREEN_WIDTH / 2 + 300, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
+const Vector2 SCREEN_POS_CENTER_BOTTOM_LEFT  = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
+const Vector2 SCREEN_POS_CENTER_BOTTOM_RIGHT = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
 const Vector2 SCREEN_POS_RIGHT_TOP           = {(float)SCREEN_WIDTH / 2 + SCREEN_WIDTH / 3, (float)SCREEN_HEIGHT / 2 - SCREEN_HEIGHT / 3};
 const Vector2 SCREEN_POS_RIGHT               = {(float)SCREEN_WIDTH / 2 + SCREEN_WIDTH / 3, (float)SCREEN_HEIGHT / 2};
 const Vector2 SCREEN_POS_RIGHT_BOTTOM        = {(float)SCREEN_WIDTH / 2 + SCREEN_WIDTH / 3, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
@@ -41,6 +44,10 @@ const Vector2 SCREEN_POS_LEFT_BOTTOM         = {(float)SCREEN_WIDTH / 2 - SCREEN
 
 enum BoxID {
     BEGIN_TOURNAMENT,
+    VALIDATE1,
+    VALIDATE2,
+    VALIDATE3,
+    VALIDATE4,
     NEW_STARTUP,
     CREATE,
     EXIT,
@@ -138,5 +145,7 @@ class PromptBox : public Box {
 
 };
 
+void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups);
+void PrintBattles();
 
 #endif

@@ -20,7 +20,7 @@ void Manager::Init() {
     this->run = true;
     this->states = StatesInit();
     this->currentState = states.at(STATE::ENTRY);
-    this->rushGame = Tournament();
+    this->rushGame.Init();
 }
 
 void Manager::Update() {
@@ -155,7 +155,7 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
                     tb->SetIsCursorOn(true);
 
                     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                        tb->SetNextText();
+                        //tb->SetNextText();
                         callback(tb);
                         return;
                     }
@@ -190,9 +190,9 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
 std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
     {STATE::ENTRY, Handle_ENTRY},
     {STATE::CREATE_STARTUP, Handle_CREATE_STARTUP},
-    {STATE::TOURNAMENT_01, Handle_TOURNAMENT_01},
+    {STATE::TOURNAMENT_08, Handle_TOURNAMENT_08},
+    {STATE::TOURNAMENT_04, Handle_TOURNAMENT_04},
     {STATE::TOURNAMENT_02, Handle_TOURNAMENT_02},
-    {STATE::TOURNAMENT_03, Handle_TOURNAMENT_03},
     {STATE::LEAVING, Handle_LEAVING},
 };
 
@@ -209,7 +209,10 @@ void Handle_ENTRY(Manager& manager) {
                 break;
             case BoxID::BEGIN_TOURNAMENT:
                 if(manager.isTournamentReady()){
-                    //manager.SetCurrentState(STATE::TOURNAMENT_01);
+                    int total = manager.GetRushGame().GetTotalStartups();
+                    if (total == 8) manager.SetCurrentState(STATE::TOURNAMENT_08);
+                    if (total == 6) manager.SetCurrentState(STATE::TOURNAMENT_03);
+                    if (total == 4) manager.SetCurrentState(STATE::TOURNAMENT_02);
                     return;
                 }
                 break;
@@ -244,7 +247,25 @@ void Handle_CREATE_STARTUP(Manager& manager) {
     });
 }
 
-void Handle_TOURNAMENT_01(Manager& manager) {
+void Handle_TOURNAMENT_08(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::VALIDATE1:
+                break;
+            case BoxID::VALIDATE2:
+                break;
+            case BoxID::VALIDATE3:
+                break;
+            case BoxID::VALIDATE4:
+                break;
+            default:
+                break;
+        }
+    });
+    PrintAllStartupsInfo(manager.GetRushGame().GetStartups());
+}
+
+void Handle_TOURNAMENT_04(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
 
@@ -255,16 +276,6 @@ void Handle_TOURNAMENT_01(Manager& manager) {
 }
 
 void Handle_TOURNAMENT_02(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-
-            default:
-                break;
-        }
-    });
-}
-
-void Handle_TOURNAMENT_03(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
 
@@ -287,48 +298,4 @@ void Handle_LEAVING(Manager& manager) {
                 break;
         }
     });
-}
-
-
-std::unordered_map<STATE, DellState> StatesInit () {
-    std::unordered_map<STATE, DellState> states;
-    std::vector<std::shared_ptr<UIObject>> screenObjs;
-
-    // ENTRY
-    screenObjs = {
-        std::make_shared<SimpleText>("STARTUP RUSH", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::BEGIN_TOURNAMENT, std::vector<std::string>{"Começar Torneio"}, SCREEN_POS_CENTER_1, false, true),
-        std::make_shared<TextBox>(BoxID::NEW_STARTUP, std::vector<std::string>{"Adicionar Startup"}, SCREEN_POS_CENTER_2, false, true),
-        std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Sair"}, SCREEN_POS_CENTER_3, false, true)
-
-    };
-    states.emplace(STATE::ENTRY, DellState(STATE::ENTRY, screenObjs));
-    screenObjs.clear();
-
-    // CREATE_STARTUP
-    screenObjs = {
-        std::make_shared<SimpleText>("INSIRA OS DADOS DA STARTUP", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<SimpleText>("Nome:", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_LEFT_1, false, false),
-        std::make_shared<PromptBox>(SCREEN_POS_CENTER_1, true, true),
-        std::make_shared<SimpleText>("Slogan:", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_LEFT_2, false, false),
-        std::make_shared<PromptBox>(SCREEN_POS_CENTER_2, true, true),
-        std::make_shared<SimpleText>("Ano:", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_LEFT_3, false, false),
-        std::make_shared<PromptBox>(SCREEN_POS_CENTER_3, true, true),
-        std::make_shared<TextBox>(BoxID::CREATE, std::vector<std::string>{"Adicionar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
-        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Voltar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true)
-
-    };
-    states.emplace(STATE::CREATE_STARTUP, DellState(STATE::CREATE_STARTUP, screenObjs));
-    screenObjs.clear();
-
-    // LEAVING
-    screenObjs = {
-        std::make_shared<SimpleText>("SAIR DO SISTEMA?", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Sim"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
-        std::make_shared<TextBox>(BoxID::NO, std::vector<std::string>{"Não"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true)
-    };
-    states.emplace(STATE::LEAVING, DellState(STATE::LEAVING, screenObjs));
-    screenObjs.clear(); 
-    
-    return states;
 }

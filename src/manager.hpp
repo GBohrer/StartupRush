@@ -4,32 +4,14 @@
 #include <vector>
 #include <map>
 #include <functional>
-#include <unordered_map>
 #include <memory>
 
 #include "interface.hpp"
+#include "states.hpp"
 #include "classes.hpp"
 
 #define POP_UP_MESSAGES_MAX     2
 
-enum STATE {
-    ENTRY,
-    CREATE_STARTUP,
-    TOURNAMENT_01,
-    TOURNAMENT_02,
-    TOURNAMENT_03,
-    LEAVING
-};
-
-typedef struct DellState {
-    STATE state;
-    std::vector<std::shared_ptr<UIObject>> screenObjs;
-
-    DellState() = default;
-    DellState(STATE s, std::vector<std::shared_ptr<UIObject>> so)
-        : state(s), screenObjs(std::move(so)) {}
-
-} DellState;
 
 class Manager {
     public:
@@ -77,12 +59,12 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback);
 
 void Handle_ENTRY(Manager& manager);
 void Handle_CREATE_STARTUP(Manager& manager);
-void Handle_TOURNAMENT_01(Manager& manager);
+void Handle_TOURNAMENT_08(Manager& manager);
+void Handle_TOURNAMENT_04(Manager& manager);
+void Handle_TOURNAMENT_04(Manager& manager);
 void Handle_TOURNAMENT_02(Manager& manager);
-void Handle_TOURNAMENT_03(Manager& manager);
 void Handle_LEAVING(Manager& manager);
 
 extern std::map<STATE, std::function<void(Manager&)>> stateHandlers;
-std::unordered_map<STATE, DellState> StatesInit ();
 
 #endif

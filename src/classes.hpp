@@ -95,6 +95,20 @@ class Battle {
 class Tournament {
     public:
         Tournament() {}
+        void Init() {
+            startups.clear();
+            startups.reserve(8);
+
+           events.clear();
+            events.emplace_back(BattleEvent(EventID::GoodPitch, "Pitch convincente", 6));
+            events.emplace_back(BattleEvent(EventID::WithBugs, "Produto com bugs", -4));
+            events.emplace_back(BattleEvent(EventID::UserDriven, "Boa tração de usuários", 3));
+            events.emplace_back(BattleEvent(EventID::AngryInvestor, "Investidor irritado", -6));
+            events.emplace_back(BattleEvent(EventID::FakeNews, "Fake news no pitch", -8));
+
+            battles.clear();
+            battles.reserve(4);
+        }
 
         static const uint8_t min_startups = 4;
         static const uint8_t max_startups = 8;
@@ -114,6 +128,10 @@ class Tournament {
             }
         }
 
+        std::vector<std::tuple<Startup, uint16_t>>& GetStartups() {
+            return startups;
+        }
+
         int GetTotalStartups() {
             return startups.size();
         }
@@ -121,7 +139,7 @@ class Tournament {
     private:
         std::vector<BattleEvent> events;
         std::vector<std::tuple<Startup, uint16_t>> startups;
-        std::vector<Battle> Battles;
+        std::vector<Battle> battles;
 };
 
 
