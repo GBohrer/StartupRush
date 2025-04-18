@@ -191,6 +191,7 @@ std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
     {STATE::ENTRY, Handle_ENTRY},
     {STATE::CREATE_STARTUP, Handle_CREATE_STARTUP},
     {STATE::TOURNAMENT_08, Handle_TOURNAMENT_08},
+    {STATE::TOURNAMENT_04, Handle_TOURNAMENT_06},
     {STATE::TOURNAMENT_04, Handle_TOURNAMENT_04},
     {STATE::TOURNAMENT_02, Handle_TOURNAMENT_02},
     {STATE::LEAVING, Handle_LEAVING},
@@ -209,10 +210,10 @@ void Handle_ENTRY(Manager& manager) {
                 break;
             case BoxID::BEGIN_TOURNAMENT:
                 if(manager.isTournamentReady()){
-                    int total = manager.GetRushGame().GetTotalStartups();
-                    if (total == 8) manager.SetCurrentState(STATE::TOURNAMENT_08);
-                    if (total == 6) manager.SetCurrentState(STATE::TOURNAMENT_03);
-                    if (total == 4) manager.SetCurrentState(STATE::TOURNAMENT_02);
+                    int totalBattles = manager.GetRushGame().MakeBattles();
+                    if (totalBattles == 4) manager.SetCurrentState(STATE::TOURNAMENT_08);
+                    if (totalBattles == 3) manager.SetCurrentState(STATE::TOURNAMENT_06);
+                    if (totalBattles == 1) manager.SetCurrentState(STATE::TOURNAMENT_02);
                     return;
                 }
                 break;
@@ -262,13 +263,30 @@ void Handle_TOURNAMENT_08(Manager& manager) {
                 break;
         }
     });
-    PrintAllStartupsInfo(manager.GetRushGame().GetStartups());
+}
+
+void Handle_TOURNAMENT_06(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::VALIDATE1:
+                break;
+            case BoxID::VALIDATE2:
+                break;
+            case BoxID::VALIDATE3:
+                break;
+            default:
+                break;
+        }
+    });
 }
 
 void Handle_TOURNAMENT_04(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
-
+            case BoxID::VALIDATE1:
+                break;
+            case BoxID::VALIDATE2:
+                break;
             default:
                 break;
         }
@@ -278,7 +296,8 @@ void Handle_TOURNAMENT_04(Manager& manager) {
 void Handle_TOURNAMENT_02(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
-
+            case BoxID::VALIDATE1:
+                break;
             default:
                 break;
         }

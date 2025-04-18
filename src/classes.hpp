@@ -1,6 +1,7 @@
 #ifndef CLASSES_HPP
 #define CLASSES_HPP
 
+#include <stdlib.h>
 #include <string>
 #include <cstdint>
 #include <vector>
@@ -9,10 +10,10 @@
 
 class Startup {
     public:
-        Startup() : name(""), slogan(""), year(0), is_competing(true) {}
+        Startup() : name(""), slogan(""), year(0), competing(false) {}
 
         Startup(std::string n, std::string s, uint16_t y)
-        : name(n), slogan(s), year(y), is_competing(true) {}
+        : name(n), slogan(s), year(y), competing(false) {}
 
         // Getters
         std::string getName() const {
@@ -27,15 +28,19 @@ class Startup {
             return year;
         }
 
-        bool IsCompeting() const {
-            return is_competing;
+        bool GetCompeting() const {
+            return competing;
+        }
+
+        void SetCompeting(bool v) {
+            this->competing = v;
         }
 
     private:
         std::string name;
         std::string slogan;
         uint16_t year;
-        bool is_competing;
+        bool competing;
 };
 
 enum EventID {
@@ -84,12 +89,47 @@ class BattleEvent {
 
 };
 
+enum Status {
+    Pending,
+    Complete
+};
+
 class Battle {
     public:
+        Battle() {}
+        Battle(const Startup& a, const Startup& b)
+        : startup_a(a, {}), startup_b(b, {}), status(Status::Pending) {}
+    
+        // Getters
+        const std::tuple<Startup, std::vector<BattleEvent>>& GetStartupA() const {
+            return startup_a;
+        }
+
+        const std::tuple<Startup, std::vector<BattleEvent>>& GetStartupB() const {
+            return startup_b;
+        }
+
+        Status GetStatus() const {
+            return status;
+        }
+
+        void SetStatus(Status s) {
+            status = s;
+        }
+
+        void AddEventToA(const BattleEvent& event) {
+            std::get<1>(startup_a).push_back(event);
+        }
+
+        void AddEventToB(const BattleEvent& event) {
+            std::get<1>(startup_b).push_back(event);
+        }
 
     private:
         std::tuple<Startup, std::vector<BattleEvent>> startup_a;
         std::tuple<Startup, std::vector<BattleEvent>> startup_b;
+        Status status;
+
 };
 
 class Tournament {
@@ -99,7 +139,7 @@ class Tournament {
             startups.clear();
             startups.reserve(8);
 
-           events.clear();
+            events.clear();
             events.emplace_back(BattleEvent(EventID::GoodPitch, "Pitch convincente", 6));
             events.emplace_back(BattleEvent(EventID::WithBugs, "Produto com bugs", -4));
             events.emplace_back(BattleEvent(EventID::UserDriven, "Boa tração de usuários", 3));
@@ -108,12 +148,12 @@ class Tournament {
 
             battles.clear();
             battles.reserve(4);
+
+            srand((unsigned int)GetTime());
         }
 
         static const uint8_t min_startups = 4;
         static const uint8_t max_startups = 8;
-
-        //bool AddBattleEvent() {}
 
         void AddStartup(Startup s) {
             startups.emplace_back(std::make_tuple(s, 70));
@@ -134,6 +174,45 @@ class Tournament {
 
         int GetTotalStartups() {
             return startups.size();
+        }
+
+        bool HasStartupsAvaliable() {
+            for (const auto& [startup, value] : startups) {
+                if (!(startup.GetCompeting())) return true;
+            }
+            return false;
+        }
+
+        int MakeBattles() {
+            int total = GetTotalStartups();
+            int i = 0;
+
+            // Enquanto houver startups competing==false
+            while (HasStartupsAvaliable()) {
+
+                std::vector<Startup> select_startups;
+
+                // Escolher 2 startups
+                while (i < 2) {
+                    //Pegar random pos do vector startups
+                    int pos = rand() % total;
+                    Startup& s_aux = std::get<0>(startups[pos]);
+
+                    // Set a startup pega como competing
+                    if (!(s_aux.GetCompeting())) {
+                        s_aux.SetCompeting(true);
+                        select_startups.emplace_back(s_aux);
+                        i++;
+                    }
+                }
+                i = 0;
+                
+                // Cria battle com as startups selecionadas
+                Battle b = Battle(select_startups[0], select_startups[1]);
+                battles.emplace_back(b);
+            }
+
+            return battles.size();
         }
 
     private:

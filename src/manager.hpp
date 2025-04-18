@@ -60,7 +60,7 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback);
 void Handle_ENTRY(Manager& manager);
 void Handle_CREATE_STARTUP(Manager& manager);
 void Handle_TOURNAMENT_08(Manager& manager);
-void Handle_TOURNAMENT_04(Manager& manager);
+void Handle_TOURNAMENT_06(Manager& manager);
 void Handle_TOURNAMENT_04(Manager& manager);
 void Handle_TOURNAMENT_02(Manager& manager);
 void Handle_LEAVING(Manager& manager);
