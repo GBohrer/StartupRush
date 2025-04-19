@@ -41,6 +41,7 @@ class Startup {
         std::string slogan;
         uint16_t year;
         bool competing;
+
 };
 
 enum EventID {
@@ -164,8 +165,17 @@ class Tournament {
             return startups.size();
         }
 
-        std::vector<std::tuple<Startup, uint16_t>>& GetStartups() {
+        std::vector<std::tuple<Startup, int16_t>>& GetStartups() {
             return startups;
+        }
+
+        uint16_t GetStartupPointsByName(std::string name) {
+            for (const auto& [startup, value] : startups) {
+                if (startup.getName() == name) {
+                    return value;
+                }
+            }
+            return 0;
         }
 
         void PrintStartups() {
@@ -173,6 +183,7 @@ class Tournament {
                 std::cout << "Nome: " << startup.getName() << std::endl;
                 std::cout << "Slogan: " << startup.getSlogan() << std::endl;
                 std::cout << "Year: " << startup.getYear() << std::endl;
+                std::cout << "Points: " << value << std::endl;
                 printf("\n");
             }
         }
@@ -189,6 +200,18 @@ class Tournament {
                 startup.SetCompeting(false);
                 value = 70;
             }
+        }
+
+        void UpdateStartupPoints(Startup s, uint16_t points) {
+            for(auto& [startup, value] : startups) {
+                if(s.getName() == startup.getName()) {
+                    value = points;
+                }
+            }
+        }
+
+        std::vector<BattleEvent>& GetBattleEvents() {
+            return events;
         }
 
         std::vector<Battle>& GetBattles() {
@@ -241,7 +264,7 @@ class Tournament {
 
     private:
         std::vector<BattleEvent> events;
-        std::vector<std::tuple<Startup, uint16_t>> startups;
+        std::vector<std::tuple<Startup, int16_t>> startups;
         std::vector<Battle> battles;
         Battle currentBattle;
 };

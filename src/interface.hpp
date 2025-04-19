@@ -13,6 +13,7 @@
 #define TEXTBOX_WIDTH               200
 #define TEXTBOX_HEIGHT              50
 #define TEXTBOX_FONTSIZE            25
+#define TEXTBOX_FONTSIZE_2          40
 #define BOX_THICKNESS               5
 #define TITLE_FONTSIZE              80
 #define PROMPTBOX_PADDING           15
@@ -68,7 +69,17 @@ enum BoxID {
     YES,
     NO,
     PROMPT,
-    CONTENT
+    CONTENT,
+    GOODPITCH_A,
+    BUGS_A,
+    USERS_A,
+    ANGRY_A,
+    FAKENEWS_A,
+    GOODPITCH_B,
+    BUGS_B,
+    USERS_B,
+    ANGRY_B,
+    FAKENEWS_B
 };
 
 class UIObject {
@@ -140,6 +151,19 @@ class TextBox : public Box {
     private:
         std::vector<SimpleText> texts;
         int currentTextIndex;
+};
+
+class BattleTextBox : public TextBox {
+    public:
+        BattleTextBox(BoxID id, std::vector<std::string> strings, Vector2 pos, bool b, bool c, EventID eventID, int8_t value);
+
+        EventID GetEventID();
+        int8_t GetValue();
+
+    private:
+        EventID eventID;
+        int8_t value;
+
 };
 
 class PromptBox : public Box {

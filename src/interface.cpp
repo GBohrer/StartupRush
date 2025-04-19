@@ -88,6 +88,20 @@ void TextBox::Draw() {
     texts[currentTextIndex].Draw();
 }
 
+//BATTLE TEXTBOX
+
+BattleTextBox::BattleTextBox(BoxID boxID, std::vector<std::string> strings, Vector2 pos, bool b, bool c, EventID eID, int8_t v)
+    : TextBox(boxID, strings, pos, b, c), eventID(eID), value(v) {}
+
+EventID BattleTextBox::GetEventID() {
+    return eventID;
+}
+
+int8_t BattleTextBox::GetValue() {
+    return value;
+}
+
+
 // PROMPTBOX
 
 PromptBox::PromptBox(Vector2 pos, bool b, bool c) {
@@ -132,6 +146,9 @@ void PromptBox::Draw() {
     DrawText(currentText.c_str(), textPos.x, textPos.y, TEXTBOX_FONTSIZE, color);
 }
 
+
+// INFO RENDERING
+
 void PrintStartupsCount(int total) {
     std::string message = "Startups: ";
     message.append(std::to_string(total));
@@ -175,8 +192,21 @@ void PrintBattles(Tournament t) {
 
 void PrintCurrentBattleAndPoints(Tournament t) {
 
-    // Renderizar cada startup e seus pontos logo abaixo
-    // Renderizar os pontos de CADA BattleEvent ao lado (esquerdo ou direito) de suas respectivas TextBox
-    
+    Battle& battle = t.GetCurrentBattle();
 
+    const auto& [startupA, battleEventsA] = battle.GetStartupA();
+    const char* nameA = startupA.getName().c_str();
+    const char* pointsA = std::to_string(t.GetStartupPointsByName(nameA)).c_str();
+    
+    DrawText(nameA,SCREEN_POS_CENTER_LEFT_1.x - MeasureText(nameA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    DrawText(pointsA,SCREEN_POS_CENTER_LEFT_2.x - MeasureText(pointsA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    
+    const auto& [startupB, battleEventsB] = battle.GetStartupB();
+    const char* nameB = startupB.getName().c_str();
+    const char* pointsB = std::to_string(t.GetStartupPointsByName(nameB)).c_str();
+
+    DrawText(nameB,SCREEN_POS_CENTER_RIGHT_1.x - MeasureText(nameB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    DrawText(pointsB,SCREEN_POS_CENTER_RIGHT_2.x - MeasureText(pointsB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    
+    // Renderizar os pontos de CADA BattleEvent ao lado (esquerdo ou direito) de suas respectivas TextBox
 }

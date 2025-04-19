@@ -8,6 +8,7 @@
 #include <sstream>
 #include <iomanip>
 #include <cstdint>
+#include <algorithm>
 
 #include "manager.hpp"
 #include "interface.hpp"
@@ -28,7 +29,6 @@ void Manager::Update() {
 
     if(IsKeyPressed(KEY_ESCAPE)) this->run = false;
     if(IsKeyPressed(KEY_P)) rushGame.PrintStartups();
-    if(IsKeyPressed(KEY_CAPS_LOCK)) std::cout << this->lastState.state << std::endl;
 
     if (stateHandlers.find(this->currentState.state) != stateHandlers.end()) {
         stateHandlers[this->currentState.state](*this);
@@ -103,18 +103,28 @@ bool Manager::HasMessages() {
 }
 
 bool Manager::isPromptsOk() {
-    bool needMessage = false;
+
+    //vector auxiliar com os nomes de startups ja adicionados
+    std::vector<std::string> startupNames;
+    for(const auto& [startup, value] : rushGame.GetStartups()){
+        startupNames.emplace_back(startup.getName());
+    }
 
     for (const auto& obj : GetUIObjects()) {
         PromptBox* pb = dynamic_cast<PromptBox*>(obj.get());
-        if (pb && pb->GetCurrentText().empty()) needMessage = true;
+
+        if (pb){
+            if(pb->GetCurrentText().empty()) {
+                CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_BOTTOM));
+                return false;
+
+            } else if (std::find(startupNames.begin(), startupNames.end(), pb->GetCurrentText()) != startupNames.end()) {
+                CreateMessage(PopUpMessage("Nome já registrado!", SCREEN_POS_CENTER_BOTTOM));
+                return false;
+            }
+        }
     }
-    if(needMessage) {
-        CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_BOTTOM));
-        return false;
-    } else {
-        return true;
-    }
+    return true;
 }
 
 
@@ -161,6 +171,15 @@ void Manager::UpdateCurrentBattle(int battle_pos) {
     rushGame.SetCurrentBattle(rushGame.GetBattles()[battle_pos-1]);
 }
 
+void Manager::UpdateCurrentBattlePoints(EventID id, int8_t eventValue) {
+
+    const auto& [startup, battle] = rushGame.GetCurrentBattle().GetStartupA();
+    auto startup_points = rushGame.GetStartupPointsByName(startup.getName());
+
+    rushGame.UpdateStartupPoints(startup, startup_points + eventValue);
+
+}
+
 // INTERFACE
 
 void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
@@ -168,6 +187,22 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
         if (obj && obj->isClickable) {
             TextBox* tb = dynamic_cast<TextBox*>(obj.get());
             PromptBox* pb = dynamic_cast<PromptBox*>(obj.get());
+            BattleTextBox* btb = dynamic_cast<BattleTextBox*>(obj.get());
+
+            // Verifca BattleTextBox
+            if (btb) {
+                if (CheckCollisionPointRec(GetMousePosition(), btb->GetBox())) {
+                    btb->SetIsCursorOn(true);
+
+                    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                        
+                        callback(btb);
+                        return;
+                    }
+                } else if (btb) {
+                    btb->SetIsCursorOn(false);
+                }
+            }
 
             // Verifica TextBox
             if (tb) {
@@ -175,7 +210,7 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
                     tb->SetIsCursorOn(true);
 
                     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                        //tb->SetNextText();
+                        
                         callback(tb);
                         return;
                     }
@@ -205,184 +240,6 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
     }
 }
 
-
-// State Handlers
-std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
-    {STATE::ENTRY, Handle_ENTRY},
-    {STATE::CREATE_STARTUP, Handle_CREATE_STARTUP},
-    {STATE::TOURNAMENT_08, Handle_TOURNAMENT_08},
-    {STATE::TOURNAMENT_06, Handle_TOURNAMENT_06},
-    {STATE::TOURNAMENT_04, Handle_TOURNAMENT_04},
-    {STATE::TOURNAMENT_02, Handle_TOURNAMENT_02},
-    {STATE::BATTLE, Handle_BATTLE},
-    {STATE::LEAVING, Handle_LEAVING},
-};
-
-void Handle_ENTRY(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-            case BoxID::NEW_STARTUP:
-                if(!(manager.GetRushGame().GetTotalStartups() == 8)) {
-                    manager.SetCurrentState(STATE::CREATE_STARTUP);
-                    return;
-                } else {
-                    manager.CreateMessage(PopUpMessage("Limite de Startups atingido!", SCREEN_POS_CENTER_BOTTOM));
-                }
-                break;
-            case BoxID::BEGIN_TOURNAMENT:
-                if(manager.isTournamentReady()){
-                    manager.UpdateLastState();
-                    int totalBattles = manager.GetRushGame().MakeBattles();
-                    if (totalBattles == 4) manager.SetCurrentState(STATE::TOURNAMENT_08);
-                    if (totalBattles == 3) manager.SetCurrentState(STATE::TOURNAMENT_06);
-                    if (totalBattles == 2) manager.SetCurrentState(STATE::TOURNAMENT_04);
-                    if (totalBattles == 1) manager.SetCurrentState(STATE::TOURNAMENT_02);
-                    return;
-                }
-                break;
-            case BoxID::EXIT:
-                manager.SetCurrentState(STATE::LEAVING);
-                return;
-            default:
-                break;
-        }
-    });
-    PrintStartupsCount(manager.GetRushGame().GetTotalStartups());
-}
-
-void Handle_CREATE_STARTUP(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-
-            case BoxID::CREATE:
-                if (manager.isPromptsOk()) {
-                    manager.CreateStartup();
-                    manager.ClearPromtps();
-                    manager.SetCurrentState(STATE::ENTRY);
-                }
-                return;
-
-            case BoxID::BACK:
-                manager.ClearPromtps();
-                manager.SetCurrentState(STATE::ENTRY);
-                return;
-            default:
-                break;
-        }
-    });
-}
-
-void Handle_TOURNAMENT_08(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-            case BoxID::VALIDATE1:
-                manager.UpdateLastState();
-                manager.UpdateCurrentBattle(1);
-                manager.SetCurrentState(STATE::BATTLE);
-                return;
-            case BoxID::VALIDATE2:
-                return;
-            case BoxID::VALIDATE3:
-                return;
-            case BoxID::VALIDATE4:
-                return;
-            case BoxID::BACK:
-                manager.ResetRushGame();
-                manager.SetCurrentState(STATE::ENTRY);
-                return;
-            default:
-                break;
-        }
-    });
-    PrintBattles(manager.GetRushGame());
-}
-
-void Handle_TOURNAMENT_06(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-            case BoxID::VALIDATE1:
-                return;
-            case BoxID::VALIDATE2:
-                return;
-            case BoxID::VALIDATE3:
-                return;
-            case BoxID::BACK:
-                manager.ResetRushGame();
-                manager.SetCurrentState(STATE::ENTRY);
-                return;
-            default:
-                break;
-        }
-    });
-    PrintBattles(manager.GetRushGame());
-}
-
-void Handle_TOURNAMENT_04(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-            case BoxID::VALIDATE1:
-                return;
-            case BoxID::VALIDATE2:
-                return;
-            case BoxID::BACK:
-                manager.ResetRushGame();
-                manager.SetCurrentState(STATE::ENTRY);
-                return;
-            default:
-                break;
-        }
-    });
-    PrintBattles(manager.GetRushGame());
-}
-
-void Handle_TOURNAMENT_02(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-            case BoxID::VALIDATE1:
-                break;
-            case BoxID::BACK:
-                manager.ResetRushGame();
-                manager.SetCurrentState(STATE::ENTRY);
-                return;
-            default:
-                break;
-        }
-    });
-    PrintBattles(manager.GetRushGame());
-}
-
-void Handle_BATTLE(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-            case BoxID::CREATE:
-                // Salvar os dados
-                // Contabilizar os pontos e definir qual startup competing = false
-                manager.ReturnToLastState();
-                return;
-            case BoxID::BACK:
-                // Reset das atribuições dos eventos
-                manager.ReturnToLastState();
-                return;
-            default:
-                break;
-        }
-    });
-}
-
-void Handle_LEAVING(Manager& manager) {
-    Handle_UI(manager, [&manager](Box* tb) {
-        switch(tb->GetID()) {
-            case BoxID::NO:
-                manager.SetCurrentState(STATE::ENTRY);
-                return;
-            case BoxID::YES:
-                manager.Close();
-                return;
-            default:
-                break;
-        }
-    });
-}
 
 // Debug Methods
 

@@ -1,6 +1,5 @@
 #include <raylib.h>
 
-#include "interface.hpp"
 #include "manager.hpp"
 
 int main()
@@ -14,7 +13,7 @@ int main()
     Manager& manager = Manager::GetManager();
     manager.Init();
 
-    manager.CreateStartupSamples(8);
+    manager.CreateStartupSamples(4);
 
     while (manager.isRunning()) {
 
