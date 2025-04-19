@@ -19,8 +19,11 @@ SimpleText::SimpleText(std::string text, int fontSize, Vector2 pos, bool b, bool
 }
 
 void SimpleText::Draw() {
-    Color color;
-    if (isCursorOn) { color = COLOR_MOUSE_HOVER; } else { color = LIGHTGRAY; }
+    Draw(LIGHTGRAY);
+}
+
+void SimpleText::Draw(Color color) {
+    if (isCursorOn) color = COLOR_MOUSE_HOVER;
     DrawText(text.c_str(), pos.x, pos.y, fontSize, color);
 }
 
@@ -37,6 +40,22 @@ BoxID Box::GetID() {
 
 void Box::SetIsCursorOn(bool b) {
     this->isCursorOn = b;
+}
+
+// POPUP MESSAGE
+
+void PopUpMessage::Update() {
+    timeLeft -= GetFrameTime();
+}
+
+bool PopUpMessage::IsExpired() const {
+    return timeLeft <= 0;
+}
+
+void PopUpMessage::Draw(Color color) {
+    float alpha = std::max(0.0f, timeLeft / duration);
+    Color faded = { color.r, color.g, color.b, static_cast<unsigned char>(255 * alpha) };
+    SimpleText::Draw(faded);
 }
 
 // TEXTBOX
@@ -83,24 +102,47 @@ void TextBox::SetIsCursorOn(bool b) {
 
 void TextBox::Draw() {
     Color color;
-    if (isCursorOn) { color = COLOR_MOUSE_HOVER; } else { color = LIGHTGRAY; }
+    isCursorOn ? color = COLOR_MOUSE_HOVER : color = LIGHTGRAY;
     DrawRectangleLinesEx({pos.x, pos.y, (float)width, (float)height}, BOX_THICKNESS, color);
-    texts[currentTextIndex].Draw();
+    texts[currentTextIndex].Draw(color);
 }
 
 //BATTLE TEXTBOX
 
 BattleTextBox::BattleTextBox(BoxID boxID, std::vector<std::string> strings, Vector2 pos, bool b, bool c, EventID eID, int8_t v)
-    : TextBox(boxID, strings, pos, b, c), eventID(eID), value(v) {}
+    : TextBox(boxID, strings, pos, b, c), eventID(eID), value(v), pressed(false) {}
 
 EventID BattleTextBox::GetEventID() {
     return eventID;
 }
 
-int8_t BattleTextBox::GetValue() {
+int8_t& BattleTextBox::GetValue() {
     return value;
 }
 
+bool BattleTextBox::isPressed() {
+    return pressed;
+}
+
+void BattleTextBox::SetPressed(bool b) {
+    this->pressed = b;
+}
+
+void BattleTextBox::TogglePressed() {
+    pressed = !pressed;
+}
+
+void BattleTextBox::Draw() {
+    Color color;
+    isCursorOn ? color = COLOR_MOUSE_HOVER : color = LIGHTGRAY;
+    if (!isPressed()) {
+        DrawRectangleLinesEx({pos.x, pos.y, (float)width, (float)height}, BOX_THICKNESS, color);
+        texts[currentTextIndex].Draw(color);
+    } else {
+        DrawRectangleLinesEx({pos.x, pos.y, (float)width, (float)height}, BOX_THICKNESS, DARKGRAY);
+        texts[currentTextIndex].Draw(DARKGRAY);
+    }
+}
 
 // PROMPTBOX
 
@@ -153,6 +195,35 @@ void PrintStartupsCount(int total) {
     std::string message = "Startups: ";
     message.append(std::to_string(total));
     DrawText(message.c_str(), SCREEN_POS_CENTER_BOTTOM_RIGHT.x-100, SCREEN_POS_CENTER_BOTTOM_RIGHT.y, TEXTBOX_FONTSIZE, LIGHTGRAY);
+}
+
+void PrintEventDescription(EventID id) {
+    const char* text;
+
+    switch(id) {
+        case EventID::GoodPitch:
+            text = "Fez um pitch convincente (+6)";
+            DrawText(text,SCREEN_POS_CENTER_3.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_3.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            return;
+        case EventID::WithBugs:
+            text = "Produto com bugs (-4)";
+            DrawText(text,SCREEN_POS_CENTER_4.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_4.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            return;
+        case EventID::UserDriven:
+            text = "Boa tração de usuários (+3)";
+            DrawText(text,SCREEN_POS_CENTER_5.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_5.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            return;
+        case EventID::AngryInvestor:
+            text = "Investidor irritado (-6)";
+            DrawText(text,SCREEN_POS_CENTER_6.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_6.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            return;
+        case EventID::FakeNews:
+            text = "Fake news durante o pitch (-8)";
+            DrawText(text,SCREEN_POS_CENTER_7.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_7.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            return;
+        default:
+            break;
+    }
 }
 
 void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups) {
@@ -209,5 +280,6 @@ void PrintCurrentBattleAndPoints(Tournament t) {
     DrawText(nameB,SCREEN_POS_CENTER_RIGHT_1.x - MeasureText(nameB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
     DrawText(pointsB,SCREEN_POS_CENTER_RIGHT_2.x - MeasureText(pointsB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
     
+
     // Renderizar os pontos de CADA BattleEvent ao lado (esquerdo ou direito) de suas respectivas TextBox
 }

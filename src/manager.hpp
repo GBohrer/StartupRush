@@ -44,8 +44,9 @@ class Manager {
         void CreateStartup();
         void CreateStartupSamples(int total);
 
+        void ResetBattle();
         void UpdateCurrentBattle(int battle_pos);
-        void UpdateCurrentBattlePoints(EventID id, int8_t eventValue);
+        void UpdateCurrentBattlePoints(BattleTextBox* btb);
 
         
     private:

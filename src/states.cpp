@@ -82,18 +82,18 @@ std::unordered_map<STATE, DellState> StatesInit () {
     // BATTLE
     screenObjs = {
         // STARTUP A
-        std::make_shared<BattleTextBox>(BoxID::GOODPITCH_A, std::vector<std::string>{"Bom Pitch"}, SCREEN_POS_CENTER_LEFT_3, false, true, EventID::GoodPitch, 6),
-        std::make_shared<BattleTextBox>(BoxID::BUGS_A, std::vector<std::string>{"Bugs"}, SCREEN_POS_CENTER_LEFT_4, false, true, EventID::WithBugs, -4),
-        std::make_shared<BattleTextBox>(BoxID::USERS_A, std::vector<std::string>{"Boa Tração"}, SCREEN_POS_CENTER_LEFT_5, false, true, EventID::UserDriven, 3),
-        std::make_shared<BattleTextBox>(BoxID::ANGRY_A, std::vector<std::string>{"Investidor :("}, SCREEN_POS_CENTER_LEFT_6, false, true, EventID::AngryInvestor, -6),
-        std::make_shared<BattleTextBox>(BoxID::FAKENEWS_A, std::vector<std::string>{"Fake News"}, SCREEN_POS_CENTER_LEFT_7, false, true, EventID::FakeNews, -8),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_A, std::vector<std::string>{"Bom Pitch"}, SCREEN_POS_CENTER_LEFT_3, false, true, EventID::GoodPitch, 6),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_A, std::vector<std::string>{"Bugs"}, SCREEN_POS_CENTER_LEFT_4, false, true, EventID::WithBugs, -4),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_A, std::vector<std::string>{"Boa Tração"}, SCREEN_POS_CENTER_LEFT_5, false, true, EventID::UserDriven, 3),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_A, std::vector<std::string>{"Investidor :("}, SCREEN_POS_CENTER_LEFT_6, false, true, EventID::AngryInvestor, -6),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_A, std::vector<std::string>{"Fake News"}, SCREEN_POS_CENTER_LEFT_7, false, true, EventID::FakeNews, -8),
 
         // STARTUP B
-        std::make_shared<BattleTextBox>(BoxID::GOODPITCH_B, std::vector<std::string>{"Bom Pitch"}, SCREEN_POS_CENTER_RIGHT_3, false, true, EventID::GoodPitch, 6),
-        std::make_shared<BattleTextBox>(BoxID::BUGS_B, std::vector<std::string>{"Bugs"}, SCREEN_POS_CENTER_RIGHT_4, false, true, EventID::WithBugs, -4),
-        std::make_shared<BattleTextBox>(BoxID::USERS_B, std::vector<std::string>{"Boa Tração"}, SCREEN_POS_CENTER_RIGHT_5, false, true, EventID::UserDriven, 3),
-        std::make_shared<BattleTextBox>(BoxID::ANGRY_B, std::vector<std::string>{"Investidor :("}, SCREEN_POS_CENTER_RIGHT_6, false, true, EventID::AngryInvestor, -6),
-        std::make_shared<BattleTextBox>(BoxID::FAKENEWS_B, std::vector<std::string>{"Fake News"}, SCREEN_POS_CENTER_RIGHT_7, false, true, EventID::FakeNews, -8),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_B, std::vector<std::string>{"Bom Pitch"}, SCREEN_POS_CENTER_RIGHT_3, false, true, EventID::GoodPitch, 6),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_B, std::vector<std::string>{"Bugs"}, SCREEN_POS_CENTER_RIGHT_4, false, true, EventID::WithBugs, -4),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_B, std::vector<std::string>{"Boa Tração"}, SCREEN_POS_CENTER_RIGHT_5, false, true, EventID::UserDriven, 3),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_B, std::vector<std::string>{"Investidor :("}, SCREEN_POS_CENTER_RIGHT_6, false, true, EventID::AngryInvestor, -6),
+        std::make_shared<BattleTextBox>(BoxID::EVENT_B, std::vector<std::string>{"Fake News"}, SCREEN_POS_CENTER_RIGHT_7, false, true, EventID::FakeNews, -8),
 
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Voltar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
         std::make_shared<TextBox>(BoxID::CREATE, std::vector<std::string>{"Salvar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true) 
@@ -287,11 +287,12 @@ void Handle_BATTLE(Manager& manager) {
                 return;
             case BoxID::BACK:
                 // Reset das atribuições dos eventos
+                manager.ResetBattle();
                 manager.ReturnToLastState();
                 return;
             default:
                 BattleTextBox* btb = dynamic_cast<BattleTextBox*>(tb);
-                manager.UpdateCurrentBattlePoints(btb->GetEventID(), btb->GetValue());
+                manager.UpdateCurrentBattlePoints(btb);
                 break;
         }
     });

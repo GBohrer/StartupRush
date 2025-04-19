@@ -52,12 +52,13 @@ void Manager::Draw() {
     ClearBackground(COLOR_BACKGROUND);
 
     // Renderiza UIObjects
-    for (const auto& obj : this->currentState.screenObjs)
+    for (const auto& obj : this->currentState.screenObjs){
         obj->Draw();
+    }
 
     // Renderiza PopUpMessages
     for (auto PopM = messages.begin(); PopM != messages.end(); ++PopM) {
-        PopM->Draw();
+        PopM->Draw(MAROON);
     }
 
     EndDrawing();
@@ -167,17 +168,43 @@ void Manager::CreateStartup() {
     rushGame.AddStartup(Startup(name, slogan, year));
 }
 
+void Manager::ResetBattle() {
+
+    Battle& battle = rushGame.GetCurrentBattle();
+    std::vector<Startup> s_aux;
+    s_aux.emplace_back(std::get<0>(battle.GetStartupA()));
+    s_aux.emplace_back(std::get<0>(battle.GetStartupB()));
+
+    for (const auto& obj : GetUIObjects()) {
+        BattleTextBox* btb = dynamic_cast<BattleTextBox*>(obj.get());
+
+        for(auto& [startup, value] : rushGame.GetStartups()) {
+        
+        }
+
+        if (btb) btb->SetPressed(false);
+    }
+
+}
+
 void Manager::UpdateCurrentBattle(int battle_pos) {
     rushGame.SetCurrentBattle(rushGame.GetBattles()[battle_pos-1]);
 }
 
-void Manager::UpdateCurrentBattlePoints(EventID id, int8_t eventValue) {
+void Manager::UpdateCurrentBattlePoints(BattleTextBox* btb) {
+    Startup startup;
+    Battle& currentBattle = rushGame.GetCurrentBattle();
 
-    const auto& [startup, battle] = rushGame.GetCurrentBattle().GetStartupA();
+    if(btb->GetID() == BoxID::EVENT_A) {
+        startup = std::get<0>(currentBattle.GetStartupA());
+    } else {
+        startup = std::get<0>(currentBattle.GetStartupB());
+    }
     auto startup_points = rushGame.GetStartupPointsByName(startup.getName());
 
-    rushGame.UpdateStartupPoints(startup, startup_points + eventValue);
-
+    auto& value = btb->GetValue();
+    btb->isPressed() ? value *= 1 : value *= -1;
+    rushGame.UpdateStartupPoints(startup, startup_points + value);
 }
 
 // INTERFACE
@@ -193,9 +220,10 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
             if (btb) {
                 if (CheckCollisionPointRec(GetMousePosition(), btb->GetBox())) {
                     btb->SetIsCursorOn(true);
+                    PrintEventDescription(btb->GetEventID());
 
                     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                        
+                        btb->TogglePressed();
                         callback(btb);
                         return;
                     }

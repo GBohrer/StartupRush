@@ -19,7 +19,7 @@
 #define PROMPTBOX_PADDING           15
 #define BOX_OFFSET                  70
 
-#define COLOR_BACKGROUND            (Color){10, 10, 40, 255}
+#define COLOR_BACKGROUND            (Color){ 10, 10, 40, 255}
 #define COLOR_MOUSE_HOVER           (Color){ 50, 240, 48, 255}
 
 const Vector2 SCREEN_POS_CENTER_1            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - 300};
@@ -70,16 +70,8 @@ enum BoxID {
     NO,
     PROMPT,
     CONTENT,
-    GOODPITCH_A,
-    BUGS_A,
-    USERS_A,
-    ANGRY_A,
-    FAKENEWS_A,
-    GOODPITCH_B,
-    BUGS_B,
-    USERS_B,
-    ANGRY_B,
-    FAKENEWS_B
+    EVENT_A,
+    EVENT_B,
 };
 
 class UIObject {
@@ -100,7 +92,8 @@ class SimpleText : public UIObject {
         SimpleText() = default;
         SimpleText(std::string text, int fontSize, Vector2 pos, bool b, bool c);
 
-        void Draw();
+        void Draw() override;
+        void Draw(Color color=LIGHTGRAY);
 
         std::string text;
         int fontSize;
@@ -115,17 +108,10 @@ class PopUpMessage : public SimpleText {
         PopUpMessage(const std::string& text, Vector2 position, float duration = 3.0f)
         : SimpleText(text, TEXTBOX_FONTSIZE + 10, position, false, false), timeLeft(duration), duration(duration) {}
 
-    void Update() {
-        timeLeft -= GetFrameTime();
-    }
+    void Update();
+    bool IsExpired() const;
 
-    bool IsExpired() const {
-        return timeLeft <= 0;
-    }
-
-    void Draw() override {
-        SimpleText::Draw();
-    }
+    void Draw(Color color);
 };
 
 class Box : public UIObject {
@@ -148,7 +134,7 @@ class TextBox : public Box {
         void SetIsCursorOn(bool b);
         void Draw();
 
-    private:
+    protected:
         std::vector<SimpleText> texts;
         int currentTextIndex;
 };
@@ -158,11 +144,16 @@ class BattleTextBox : public TextBox {
         BattleTextBox(BoxID id, std::vector<std::string> strings, Vector2 pos, bool b, bool c, EventID eventID, int8_t value);
 
         EventID GetEventID();
-        int8_t GetValue();
+        int8_t& GetValue();
+        bool isPressed();
+        void SetPressed(bool b);
+        void TogglePressed();
+        void Draw();
 
     private:
         EventID eventID;
         int8_t value;
+        bool pressed;
 
 };
 
@@ -183,6 +174,7 @@ class PromptBox : public Box {
 };
 
 void PrintStartupsCount(int total);
+void PrintEventDescription(EventID id);
 void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups);
 void PrintBattles(Tournament t);
 void PrintCurrentBattleAndPoints(Tournament t);
