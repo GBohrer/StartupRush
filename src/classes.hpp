@@ -157,7 +157,7 @@ class Tournament {
         static const uint8_t max_startups = 8;
 
         void AddStartup(Startup s) {
-            startups.emplace_back(std::make_tuple(s, 70));
+            startups.emplace_back(std::make_tuple(s, (int16_t)70));
         }
 
         int GetTotalStartups() {
@@ -169,7 +169,7 @@ class Tournament {
             return startups;
         }
 
-        uint16_t GetStartupPointsByName(std::string name) {
+        int16_t GetStartupPointsByName(std::string name) {
             for (const auto& [startup, value] : startups) {
                 if (startup.getName() == name) {
                     return value;

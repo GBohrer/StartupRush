@@ -196,6 +196,7 @@ void PrintCurrentBattleAndPoints(Tournament t) {
 
     const auto& [startupA, battleEventsA] = battle.GetStartupA();
     const char* nameA = startupA.getName().c_str();
+    
     const char* pointsA = std::to_string(t.GetStartupPointsByName(nameA)).c_str();
     
     DrawText(nameA,SCREEN_POS_CENTER_LEFT_1.x - MeasureText(nameA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
