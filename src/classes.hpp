@@ -195,6 +195,14 @@ class Tournament {
             return battles;
         }
 
+        void SetCurrentBattle(Battle b) {
+            this->currentBattle = b;
+        }
+
+        Battle& GetCurrentBattle() {
+            return currentBattle;
+        }
+
         int MakeBattles() {
             int total = GetTotalStartups();
             int i = 0;
@@ -235,6 +243,7 @@ class Tournament {
         std::vector<BattleEvent> events;
         std::vector<std::tuple<Startup, uint16_t>> startups;
         std::vector<Battle> battles;
+        Battle currentBattle;
 };
 
 

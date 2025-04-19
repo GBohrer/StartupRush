@@ -31,6 +31,8 @@ class Manager {
         void ResetRushGame();
 
         void SetCurrentState(STATE state);
+        void UpdateLastState();
+        void ReturnToLastState();
 
         void CreateMessage(PopUpMessage m);
         bool HasMessages();
@@ -42,11 +44,14 @@ class Manager {
         void CreateStartup();
         void CreateStartupSamples(int total);
 
+        void UpdateCurrentBattle(int battle_pos);
+
         
     private:
         std::unordered_map<STATE, DellState> states;
         std::vector<PopUpMessage> messages;
         DellState currentState;
+        DellState lastState;
         bool run;
 
         Tournament rushGame;
@@ -65,6 +70,7 @@ void Handle_TOURNAMENT_08(Manager& manager);
 void Handle_TOURNAMENT_06(Manager& manager);
 void Handle_TOURNAMENT_04(Manager& manager);
 void Handle_TOURNAMENT_02(Manager& manager);
+void Handle_BATTLE(Manager& manager);
 void Handle_LEAVING(Manager& manager);
 
 extern std::map<STATE, std::function<void(Manager&)>> stateHandlers;

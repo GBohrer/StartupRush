@@ -13,6 +13,7 @@ enum STATE {
     TOURNAMENT_06,
     TOURNAMENT_04,
     TOURNAMENT_02,
+    BATTLE,
     LEAVING
 };
 

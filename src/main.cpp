@@ -14,7 +14,7 @@ int main()
     Manager& manager = Manager::GetManager();
     manager.Init();
 
-    manager.CreateStartupSamples(6);
+    manager.CreateStartupSamples(8);
 
     while (manager.isRunning()) {
 

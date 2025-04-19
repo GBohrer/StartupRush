@@ -20,6 +20,7 @@ void Manager::Init() {
     this->run = true;
     this->states = StatesInit();
     this->currentState = states.at(STATE::ENTRY);
+    this->lastState = states.at(STATE::ENTRY);
     this->rushGame.Init();
 }
 
@@ -27,10 +28,12 @@ void Manager::Update() {
 
     if(IsKeyPressed(KEY_ESCAPE)) this->run = false;
     if(IsKeyPressed(KEY_P)) rushGame.PrintStartups();
+    if(IsKeyPressed(KEY_CAPS_LOCK)) std::cout << this->lastState.state << std::endl;
 
     if (stateHandlers.find(this->currentState.state) != stateHandlers.end()) {
         stateHandlers[this->currentState.state](*this);
     } else {
+        std::exit(-1);
     }
 
     // Atualiza as PopUpMessages atuais
@@ -80,6 +83,14 @@ void Manager::ResetRushGame() {
 void Manager::SetCurrentState(STATE state) {
     DellState s = states.at(state);
     this->currentState = s;
+}
+
+void Manager::UpdateLastState() {
+    this->lastState = currentState;
+}
+
+void Manager::ReturnToLastState() {
+    this->currentState = lastState;
 }
 
 void Manager::CreateMessage(PopUpMessage m) {
@@ -146,6 +157,10 @@ void Manager::CreateStartup() {
     rushGame.AddStartup(Startup(name, slogan, year));
 }
 
+void Manager::UpdateCurrentBattle(int battle_pos) {
+    rushGame.SetCurrentBattle(rushGame.GetBattles()[battle_pos-1]);
+}
+
 // INTERFACE
 
 void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
@@ -199,6 +214,7 @@ std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
     {STATE::TOURNAMENT_06, Handle_TOURNAMENT_06},
     {STATE::TOURNAMENT_04, Handle_TOURNAMENT_04},
     {STATE::TOURNAMENT_02, Handle_TOURNAMENT_02},
+    {STATE::BATTLE, Handle_BATTLE},
     {STATE::LEAVING, Handle_LEAVING},
 };
 
@@ -215,6 +231,7 @@ void Handle_ENTRY(Manager& manager) {
                 break;
             case BoxID::BEGIN_TOURNAMENT:
                 if(manager.isTournamentReady()){
+                    manager.UpdateLastState();
                     int totalBattles = manager.GetRushGame().MakeBattles();
                     if (totalBattles == 4) manager.SetCurrentState(STATE::TOURNAMENT_08);
                     if (totalBattles == 3) manager.SetCurrentState(STATE::TOURNAMENT_06);
@@ -259,6 +276,9 @@ void Handle_TOURNAMENT_08(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
             case BoxID::VALIDATE1:
+                manager.UpdateLastState();
+                manager.UpdateCurrentBattle(1);
+                manager.SetCurrentState(STATE::BATTLE);
                 return;
             case BoxID::VALIDATE2:
                 return;
@@ -329,6 +349,24 @@ void Handle_TOURNAMENT_02(Manager& manager) {
         }
     });
     PrintBattles(manager.GetRushGame());
+}
+
+void Handle_BATTLE(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::CREATE:
+                // Salvar os dados
+                // Contabilizar os pontos e definir qual startup competing = false
+                manager.ReturnToLastState();
+                return;
+            case BoxID::BACK:
+                // Reset das atribuições dos eventos
+                manager.ReturnToLastState();
+                return;
+            default:
+                break;
+        }
+    });
 }
 
 void Handle_LEAVING(Manager& manager) {

@@ -10,26 +10,39 @@
 #define SCREEN_WIDTH                1280
 #define SCREEN_HEIGHT               720
 
-#define TEXTBOX_WIDTH               260
-#define TEXTBOX_HEIGHT              70
-#define TEXTBOX_FONTSIZE            40
+#define TEXTBOX_WIDTH               200
+#define TEXTBOX_HEIGHT              50
+#define TEXTBOX_FONTSIZE            25
 #define BOX_THICKNESS               5
 #define TITLE_FONTSIZE              80
 #define PROMPTBOX_PADDING           15
+#define BOX_OFFSET                  70
 
 #define COLOR_BACKGROUND            (Color){10, 10, 40, 255}
 #define COLOR_MOUSE_HOVER           (Color){ 50, 240, 48, 255}
 
-const Vector2 SCREEN_POS_CENTER_1            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - 100};
-const Vector2 SCREEN_POS_CENTER_LEFT_1       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 - 100};
-const Vector2 SCREEN_POS_CENTER_2            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2};
-const Vector2 SCREEN_POS_CENTER_LEFT_2       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2};
-const Vector2 SCREEN_POS_CENTER_3            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 + 100};
-const Vector2 SCREEN_POS_CENTER_LEFT_3       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 + 100};
-const Vector2 SCREEN_POS_CENTER_4            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 + 200};
-const Vector2 SCREEN_POS_CENTER_LEFT_4       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 + 200};
-const Vector2 SCREEN_POS_CENTER_5            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 + 300};
-const Vector2 SCREEN_POS_CENTER_TOP          = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - SCREEN_HEIGHT / 3};
+const Vector2 SCREEN_POS_CENTER_1            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - 300};
+const Vector2 SCREEN_POS_CENTER_LEFT_1       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 - 300};
+const Vector2 SCREEN_POS_CENTER_RIGHT_1      = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 - 300};
+const Vector2 SCREEN_POS_CENTER_2            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - 230};
+const Vector2 SCREEN_POS_CENTER_LEFT_2       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 - 230};
+const Vector2 SCREEN_POS_CENTER_RIGHT_2      = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 - 230};
+const Vector2 SCREEN_POS_CENTER_3            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - 160};
+const Vector2 SCREEN_POS_CENTER_LEFT_3       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 - 160};
+const Vector2 SCREEN_POS_CENTER_RIGHT_3      = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 - 160};
+const Vector2 SCREEN_POS_CENTER_4            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - 90};
+const Vector2 SCREEN_POS_CENTER_LEFT_4       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 - 90};
+const Vector2 SCREEN_POS_CENTER_RIGHT_4      = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 - 90};
+const Vector2 SCREEN_POS_CENTER_5            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 - 20};
+const Vector2 SCREEN_POS_CENTER_LEFT_5       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 - 20};
+const Vector2 SCREEN_POS_CENTER_RIGHT_5      = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 - 20};
+const Vector2 SCREEN_POS_CENTER_6            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 + 50};
+const Vector2 SCREEN_POS_CENTER_LEFT_6       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 + 50};
+const Vector2 SCREEN_POS_CENTER_RIGHT_6      = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 + 50};
+const Vector2 SCREEN_POS_CENTER_7            = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 + 120};
+const Vector2 SCREEN_POS_CENTER_LEFT_7       = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 + 120};
+const Vector2 SCREEN_POS_CENTER_RIGHT_7      = {(float)SCREEN_WIDTH / 2 + 500, (float)SCREEN_HEIGHT / 2 + 120};
+const Vector2 SCREEN_POS_CENTER_TOP          = {(float)SCREEN_WIDTH / 2, 50};
 const Vector2 SCREEN_POS_CENTER              = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2};
 const Vector2 SCREEN_POS_CENTER_BOTTOM       = {(float)SCREEN_WIDTH / 2, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
 const Vector2 SCREEN_POS_CENTER_BOTTOM_LEFT  = {(float)SCREEN_WIDTH / 2 - 500, (float)SCREEN_HEIGHT / 2 + SCREEN_HEIGHT / 3};
@@ -89,7 +102,7 @@ class PopUpMessage : public SimpleText {
         float duration;
 
         PopUpMessage(const std::string& text, Vector2 position, float duration = 3.0f)
-        : SimpleText(text, TEXTBOX_FONTSIZE - 10, position, false, false), timeLeft(duration), duration(duration) {}
+        : SimpleText(text, TEXTBOX_FONTSIZE + 10, position, false, false), timeLeft(duration), duration(duration) {}
 
     void Update() {
         timeLeft -= GetFrameTime();
@@ -148,5 +161,6 @@ class PromptBox : public Box {
 void PrintStartupsCount(int total);
 void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups);
 void PrintBattles(Tournament t);
+void PrintCurrentBattleAndPoints(Tournament t);
 
 #endif

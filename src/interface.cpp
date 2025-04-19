@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "interface.hpp"
 
@@ -134,7 +135,7 @@ void PromptBox::Draw() {
 void PrintStartupsCount(int total) {
     std::string message = "Startups: ";
     message.append(std::to_string(total));
-    DrawText(message.c_str(), SCREEN_POS_CENTER_BOTTOM_RIGHT.x-100, SCREEN_POS_CENTER_BOTTOM_RIGHT.y, TEXTBOX_FONTSIZE - 20, LIGHTGRAY);
+    DrawText(message.c_str(), SCREEN_POS_CENTER_BOTTOM_RIGHT.x-100, SCREEN_POS_CENTER_BOTTOM_RIGHT.y, TEXTBOX_FONTSIZE, LIGHTGRAY);
 }
 
 void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups) {
@@ -151,22 +152,31 @@ void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups) {
 }
 
 void PrintBattles(Tournament t) {
+    std::stringstream stream;
     std::string text;
     int offset = 0;
+    const auto& battles = t.GetBattles();
 
-    for (const auto& battle : t.GetBattles()) {
-        const auto& startupA = std::get<0>(battle.GetStartupA());
+    for (size_t i=0; i < battles.size(); i++) {
+        const auto& startupA = std::get<0>(battles[i].GetStartupA());
         std::string nameA = startupA.getName();
-        const auto& startupB = std::get<0>(battle.GetStartupB());
+        const auto& startupB = std::get<0>(battles[i].GetStartupB());
         std::string nameB = startupB.getName();
 
-        text.append(nameA);
-        text.append("  Vs.  ");
-        text.append(nameB);
+        stream << "Batalha " << i+1 << ": " << nameA << "  Vs.  " << nameB;
+        text = stream.str();
 
-        DrawText(text.c_str(), SCREEN_POS_CENTER_1.x - MeasureText(text.c_str(), TEXTBOX_FONTSIZE) / 2, SCREEN_POS_CENTER_1.y + offset, TEXTBOX_FONTSIZE, LIGHTGRAY);
+        DrawText(text.c_str(), SCREEN_POS_CENTER_2.x - 300, SCREEN_POS_CENTER_2.y + offset, TEXTBOX_FONTSIZE+10, LIGHTGRAY);
         
-        text.clear();
-        offset += 100;
+        text.clear(); stream.str("");
+        offset += 70;
     }
+}
+
+void PrintCurrentBattleAndPoints(Tournament t) {
+
+    // Renderizar cada startup e seus pontos logo abaixo
+    // Renderizar os pontos de CADA BattleEvent ao lado (esquerdo ou direito) de suas respectivas TextBox
+    
+
 }
