@@ -145,7 +145,8 @@ class PromptBox : public Box {
 
 };
 
+void PrintStartupsCount(int total);
 void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups);
-void PrintBattles();
+void PrintBattles(Tournament t);
 
 #endif

@@ -28,6 +28,7 @@ class Manager {
 
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
         Tournament& GetRushGame();
+        void ResetRushGame();
 
         void SetCurrentState(STATE state);
 
@@ -39,6 +40,7 @@ class Manager {
 
         bool isTournamentReady();
         void CreateStartup();
+        void CreateStartupSamples(int total);
 
         
     private:
@@ -66,5 +68,6 @@ void Handle_TOURNAMENT_02(Manager& manager);
 void Handle_LEAVING(Manager& manager);
 
 extern std::map<STATE, std::function<void(Manager&)>> stateHandlers;
+
 
 #endif

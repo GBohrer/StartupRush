@@ -50,7 +50,7 @@ std::unordered_map<STATE, DellState> StatesInit () {
         std::make_shared<SimpleText>("TORNEIO", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
         std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_1, false, true),
         std::make_shared<TextBox>(BoxID::VALIDATE2, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_2, false, true),
-        std::make_shared<TextBox>(BoxID::VALIDATE3, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_2, false, true),
+        std::make_shared<TextBox>(BoxID::VALIDATE3, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true)
 
     };

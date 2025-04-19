@@ -159,6 +159,15 @@ class Tournament {
             startups.emplace_back(std::make_tuple(s, 70));
         }
 
+        int GetTotalStartups() {
+            if (startups.empty()) return 0;
+            return startups.size();
+        }
+
+        std::vector<std::tuple<Startup, uint16_t>>& GetStartups() {
+            return startups;
+        }
+
         void PrintStartups() {
             for (const auto& [startup, value] : startups) {
                 std::cout << "Nome: " << startup.getName() << std::endl;
@@ -168,14 +177,6 @@ class Tournament {
             }
         }
 
-        std::vector<std::tuple<Startup, uint16_t>>& GetStartups() {
-            return startups;
-        }
-
-        int GetTotalStartups() {
-            return startups.size();
-        }
-
         bool HasStartupsAvaliable() {
             for (const auto& [startup, value] : startups) {
                 if (!(startup.GetCompeting())) return true;
@@ -183,14 +184,24 @@ class Tournament {
             return false;
         }
 
+        void ResetStartups() {
+            for (auto& [startup, value] : startups) {
+                startup.SetCompeting(false);
+                value = 70;
+            }
+        }
+
+        std::vector<Battle>& GetBattles() {
+            return battles;
+        }
+
         int MakeBattles() {
             int total = GetTotalStartups();
             int i = 0;
+            std::vector<Startup> select_startups;
 
             // Enquanto houver startups competing==false
             while (HasStartupsAvaliable()) {
-
-                std::vector<Startup> select_startups;
 
                 // Escolher 2 startups
                 while (i < 2) {
@@ -205,6 +216,7 @@ class Tournament {
                         i++;
                     }
                 }
+                select_startups.clear();
                 i = 0;
                 
                 // Cria battle com as startups selecionadas
@@ -213,6 +225,10 @@ class Tournament {
             }
 
             return battles.size();
+        }
+
+        void ClearBattles() {
+            this->battles.clear();
         }
 
     private:

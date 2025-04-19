@@ -131,6 +131,11 @@ void PromptBox::Draw() {
     DrawText(currentText.c_str(), textPos.x, textPos.y, TEXTBOX_FONTSIZE, color);
 }
 
+void PrintStartupsCount(int total) {
+    std::string message = "Startups: ";
+    message.append(std::to_string(total));
+    DrawText(message.c_str(), SCREEN_POS_CENTER_BOTTOM_RIGHT.x-100, SCREEN_POS_CENTER_BOTTOM_RIGHT.y, TEXTBOX_FONTSIZE - 20, LIGHTGRAY);
+}
 
 void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups) {
     
@@ -143,5 +148,25 @@ void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups) {
 
         offset += TEXTBOX_FONTSIZE + 5;
     }
+}
 
+void PrintBattles(Tournament t) {
+    std::string text;
+    int offset = 0;
+
+    for (const auto& battle : t.GetBattles()) {
+        const auto& startupA = std::get<0>(battle.GetStartupA());
+        std::string nameA = startupA.getName();
+        const auto& startupB = std::get<0>(battle.GetStartupB());
+        std::string nameB = startupB.getName();
+
+        text.append(nameA);
+        text.append("  Vs.  ");
+        text.append(nameB);
+
+        DrawText(text.c_str(), SCREEN_POS_CENTER_1.x - MeasureText(text.c_str(), TEXTBOX_FONTSIZE) / 2, SCREEN_POS_CENTER_1.y + offset, TEXTBOX_FONTSIZE, LIGHTGRAY);
+        
+        text.clear();
+        offset += 100;
+    }
 }
