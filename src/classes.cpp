@@ -103,9 +103,7 @@ std::vector<StartupEntry>& Tournament::GetStartups() {
 
 int16_t& Tournament::GetStartupPointsByName(std::string name) {
     for (auto& [startup, value, status, events] : startups) {
-        if (startup.getName() == name) {
-            return value;
-        }
+        if (startup.getName() == name) return value;
     }
 }
 

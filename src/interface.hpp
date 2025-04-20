@@ -120,9 +120,14 @@ class Box : public UIObject {
         BoxID GetID();
         void SetIsCursorOn(bool b);
 
+        bool isPressed();
+        void SetPressed(bool b);
+        void TogglePressed();
+
         BoxID id;
         int width;
         int height;
+        bool pressed;
 };
 
 class TextBox : public Box {
@@ -145,16 +150,11 @@ class BattleTextBox : public TextBox {
 
         EventID GetEventID();
         int8_t& GetValue();
-        bool isPressed();
-        void SetPressed(bool b);
-        void TogglePressed();
         void Draw();
 
     private:
         EventID eventID;
         int8_t value;
-        bool pressed;
-
 };
 
 class PromptBox : public Box {

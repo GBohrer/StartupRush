@@ -42,6 +42,18 @@ void Box::SetIsCursorOn(bool b) {
     this->isCursorOn = b;
 }
 
+bool Box::isPressed() {
+    return pressed;
+}
+
+void Box::SetPressed(bool b) {
+    this->pressed = b;
+}
+
+void Box::TogglePressed() {
+    pressed = !pressed;
+}
+
 // POPUP MESSAGE
 
 void PopUpMessage::Update() {
@@ -69,6 +81,7 @@ TextBox::TextBox(BoxID id, std::vector<std::string> strings, Vector2 pos, bool b
     this->isClickable = c;
     this->pos = {pos.x - width/2, pos.y};
     this->currentTextIndex = 0;
+    this->pressed = false;
     
     texts.reserve(strings.size());
 
@@ -110,7 +123,7 @@ void TextBox::Draw() {
 //BATTLE TEXTBOX
 
 BattleTextBox::BattleTextBox(BoxID boxID, std::vector<std::string> strings, Vector2 pos, bool b, bool c, EventID eID, int8_t v)
-    : TextBox(boxID, strings, pos, b, c), eventID(eID), value(v), pressed(false) {}
+    : TextBox(boxID, strings, pos, b, c), eventID(eID), value(v) {}
 
 EventID BattleTextBox::GetEventID() {
     return eventID;
@@ -118,18 +131,6 @@ EventID BattleTextBox::GetEventID() {
 
 int8_t& BattleTextBox::GetValue() {
     return value;
-}
-
-bool BattleTextBox::isPressed() {
-    return pressed;
-}
-
-void BattleTextBox::SetPressed(bool b) {
-    this->pressed = b;
-}
-
-void BattleTextBox::TogglePressed() {
-    pressed = !pressed;
 }
 
 void BattleTextBox::Draw() {

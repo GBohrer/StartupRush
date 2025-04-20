@@ -189,7 +189,6 @@ void Manager::ResetBattle(bool shouldResetPoints) {
             btb->SetPressed(false);
         }
     }
-
 }
 
 void Manager::UpdateCurrentBattle(int battle_pos) {
