@@ -107,7 +107,7 @@ bool Manager::isPromptsOk() {
 
     //vector auxiliar com os nomes de startups ja adicionados
     std::vector<std::string> startupNames;
-    for(const auto& [startup, value] : rushGame.GetStartups()){
+    for(const auto& [startup, value, events] : rushGame.GetStartups()){
         startupNames.emplace_back(startup.getName());
     }
 
@@ -168,7 +168,7 @@ void Manager::CreateStartup() {
     rushGame.AddStartup(Startup(name, slogan, year));
 }
 
-void Manager::ResetBattle() {
+void Manager::ResetBattle(bool shouldResetPoints) {
 
     Battle& currentBattle = rushGame.GetCurrentBattle();
 
@@ -176,15 +176,17 @@ void Manager::ResetBattle() {
         BattleTextBox* btb = dynamic_cast<BattleTextBox*>(obj.get());
 
         if(btb && btb->isPressed()) {
-            auto& startup = (btb->GetID() == BoxID::EVENT_A)
-            ? currentBattle.GetStartupA()
-            : currentBattle.GetStartupB();
+            if(shouldResetPoints){
+                auto& startup = (btb->GetID() == BoxID::EVENT_A)
+                ? currentBattle.GetStartupA()
+                : currentBattle.GetStartupB();
 
-            auto& eventValue = btb->GetValue();
-            auto currentPoints = rushGame.GetStartupPointsByName(std::get<0>(startup).getName());
-            
-            int updatedPoints = currentPoints - eventValue;
-            rushGame.UpdateStartupPoints(std::get<0>(startup), updatedPoints);
+                auto& eventValue = btb->GetValue();
+                auto currentPoints = rushGame.GetStartupPointsByName(startup.getName());
+                
+                int16_t updatedPoints = currentPoints - eventValue;
+                rushGame.UpdateStartupPoints(startup, updatedPoints);
+            }
             btb->SetPressed(false);
         }
     }
@@ -202,12 +204,22 @@ void Manager::UpdateCurrentBattlePoints(BattleTextBox* btb) {
     ? currentBattle.GetStartupA()
     : currentBattle.GetStartupB();
 
-    auto currentPoints = rushGame.GetStartupPointsByName(std::get<0>(startup).getName());
+    auto currentPoints = rushGame.GetStartupPointsByName(startup.getName());
+    BattleEvent be = BattleEvent(btb->GetEventID(), btb->GetValue());
 
+    // Acrescenta/decrementa pontos de acordo com o botão do BattleEvent (pressed)
     auto& eventValue = btb->GetValue();
-    int updatedPoints = currentPoints + (btb->isPressed() ? eventValue : -eventValue);
-    rushGame.UpdateStartupPoints(std::get<0>(startup), updatedPoints);
+    int16_t updatedPoints = currentPoints + (btb->isPressed() ? eventValue : -eventValue);
+    rushGame.UpdateStartupPoints(startup, updatedPoints);
+    rushGame.UpdateStartupBattleEvent(startup, be);
+
+    // Adiciona o BattleEvent ao vector da tuple da startup (para relatório)
 }
+
+void Manager::SelectWinner() {
+    //Battle& currentBattle = rushGame.GetCurrentBattle();
+}
+
 
 // INTERFACE
 

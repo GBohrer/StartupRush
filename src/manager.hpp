@@ -44,10 +44,10 @@ class Manager {
         void CreateStartup();
         void CreateStartupSamples(int total);
 
-        void ResetBattle();
+        void ResetBattle(bool shouldResetPoints);
         void UpdateCurrentBattle(int battle_pos);
         void UpdateCurrentBattlePoints(BattleTextBox* btb);
-
+        void SelectWinner();
         
     private:
         std::unordered_map<STATE, DellState> states;

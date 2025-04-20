@@ -281,13 +281,13 @@ void Handle_BATTLE(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
             case BoxID::CREATE:
-                // Salvar os dados
-                // Contabilizar os pontos e definir qual startup competing = false
+                manager.ResetBattle(false);
+                manager.SelectWinner();
+
                 manager.ReturnToLastState();
                 return;
             case BoxID::BACK:
-                // Reset das atribuições dos eventos
-                manager.ResetBattle();
+                manager.ResetBattle(true);
                 manager.ReturnToLastState();
                 return;
             default:

@@ -221,7 +221,7 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     endif
 endif
 ifeq ($(PLATFORM),PLATFORM_RPI)
-    CFLAGS += -std=gnu99
+    CFLAGS += $(if $(filter %.c, $(OBJS)), -std=gnu99)
 endif
 ifeq ($(PLATFORM),PLATFORM_WEB)
     # -Os                        # size optimization
