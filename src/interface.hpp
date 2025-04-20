@@ -135,6 +135,7 @@ class TextBox : public Box {
         TextBox(BoxID id, std::vector<std::string> strings, Vector2 pos, bool b, bool c);
 
         void SetNextText();
+        void SetCurrentText(int index);
         std::string& GetText();
         void SetIsCursorOn(bool b);
         void Draw();

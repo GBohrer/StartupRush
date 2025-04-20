@@ -72,6 +72,10 @@ std::vector<std::shared_ptr<UIObject>>& Manager::GetUIObjects() {
     return this->currentState.screenObjs;
 }
 
+std::vector<std::shared_ptr<UIObject>>& Manager::GetUIObjectsFromState(const DellState& ds) {
+    return states[ds.state].screenObjs;
+}
+
 Tournament& Manager::GetRushGame() {
     return this->rushGame;
 }
@@ -79,6 +83,7 @@ Tournament& Manager::GetRushGame() {
 void Manager::ResetRushGame() {
     this->rushGame.ClearBattles();
     this->rushGame.ResetStartups();
+    this->states = StatesInit();
 }
 
 void Manager::SetCurrentState(STATE state) {
@@ -168,15 +173,17 @@ void Manager::CreateStartup() {
     rushGame.AddStartup(Startup(name, slogan, year));
 }
 
-void Manager::ResetBattle(bool shouldResetPoints) {
+void Manager::ResetBattle(bool shouldResetAll) {
 
     Battle& currentBattle = rushGame.GetCurrentBattle();
+
 
     for (const auto& obj : GetUIObjects()) {
         BattleTextBox* btb = dynamic_cast<BattleTextBox*>(obj.get());
 
+        // Reset dos botões de eventos + retirada dos pontos baseada nestes botões
         if(btb && btb->isPressed()) {
-            if(shouldResetPoints){
+            if(shouldResetAll){
                 auto& startup_entry = (btb->GetID() == BoxID::EVENT_A)
                 ? currentBattle.GetStartupA()
                 : currentBattle.GetStartupB();
@@ -187,6 +194,18 @@ void Manager::ResetBattle(bool shouldResetPoints) {
                 rushGame.ClearStartupBattleEvents(startup_entry.startup);
             }
             btb->SetPressed(false);
+        }
+    }
+
+    // Atualiza a tela do torneio apenas quando os pontos são salvos!
+    if (shouldResetAll) {
+        for (const auto& obj : GetUIObjectsFromState(lastState)) {
+            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
+
+            if(tb && tb->pressed) {
+                tb->isClickable = false;
+                tb->SetCurrentText(1);
+            }
         }
     }
 }
@@ -219,20 +238,48 @@ void Manager::SelectWinner() {
     auto& pointsB = rushGame.GetStartupPointsByName(startupB_entry.startup.getName());
 
     StartupEntry winner;
+    StartupEntry loser;
 
     if (pointsA == pointsB) {
         CreateMessage(PopUpMessage("Shark Fight...", SCREEN_POS_CENTER_3));
         
-        rand() % 2 == 0 ? winner = startupA_entry : winner = startupB_entry;
+        if (rand() % 2 == 0) {
+            winner = startupA_entry;
+            loser = startupB_entry;
+        } else {
+            winner = startupB_entry;
+            loser = startupA_entry;
+        }
+
         rushGame.AddStartupPoints(winner.startup, 2);
         SelectWinner();
-    } else {
 
+    } else {
         pointsA > pointsB ? winner = startupA_entry : winner = startupB_entry;
 
         rushGame.AddStartupPoints(winner.startup, 30);
         currentBattle.SetStatus(BattleStatus::Complete);
+        loser.status = Status::DESQUALIFIED;
+        
+        // Pegar UIObjects da tela anterior
+            // quando for a com pressed=true, set isClicklabe=false
+        for (auto& obj : GetUIObjectsFromState(lastState)) {
+            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
+
+            if(tb && tb->pressed) {
+                tb->isClickable = false;
+                tb->SetCurrentText(1);
+            }
+        }
     }
+
+}
+
+bool Manager::isAllBattlesCompleted() {
+    for (const auto& battle : rushGame.GetBattles()) {
+        if (battle.GetStatus() == BattleStatus::Pending) return false;
+    }
+    return true;
 }
 
 
@@ -267,7 +314,7 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
                     tb->SetIsCursorOn(true);
 
                     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                        
+                        tb->SetPressed(true);
                         callback(tb);
                         return;
                     }

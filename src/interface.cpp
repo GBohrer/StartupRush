@@ -104,6 +104,10 @@ void TextBox::SetNextText() {
     this->currentTextIndex = (currentTextIndex + 1) % texts.size();
 }
 
+void TextBox::SetCurrentText(int index) {
+    this->currentTextIndex = index;
+}
+
 std::string& TextBox::GetText() {
     return texts[currentTextIndex].text;
 }

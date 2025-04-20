@@ -143,7 +143,6 @@ void Handle_ENTRY(Manager& manager) {
                     if (totalBattles == 4) manager.SetCurrentState(STATE::TOURNAMENT_08);
                     if (totalBattles == 3) manager.SetCurrentState(STATE::TOURNAMENT_06);
                     if (totalBattles == 2) manager.SetCurrentState(STATE::TOURNAMENT_04);
-                    if (totalBattles == 1) manager.SetCurrentState(STATE::TOURNAMENT_02);
                     if (totalBattles == 0) manager.CreateMessage(PopUpMessage("DEU ERRO!!!", SCREEN_POS_CENTER));
                     return;
                 }
@@ -284,6 +283,12 @@ void Handle_BATTLE(Manager& manager) {
             case BoxID::CREATE:
                 manager.ResetBattle(false);
                 manager.SelectWinner();
+
+                if (manager.isAllBattlesCompleted()){
+                    int totalBattles = manager.GetRushGame().MakeBattles();
+                    if (totalBattles == 2) manager.SetCurrentState(STATE::TOURNAMENT_04);
+                    if (totalBattles == 1) manager.SetCurrentState(STATE::TOURNAMENT_02);
+                }
 
                 manager.ReturnToLastState();
                 return;

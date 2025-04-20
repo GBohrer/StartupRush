@@ -108,12 +108,14 @@ int16_t& Tournament::GetStartupPointsByName(std::string name) {
 }
 
 void Tournament::PrintStartups() {
+    std::cout << "=========================================" << std::endl;
     for (const auto& [startup, value, status, events] : startups) {
         std::cout << "Nome: " << startup.getName() << std::endl;
         std::cout << "Points: " << value << std::endl;
         std::cout << "Status: " << status << std::endl;
         printf("\n");
     }
+    std::cout << "=========================================" << std::endl;
 }
 
 bool Tournament::HasStartupsAvaliable() {

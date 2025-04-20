@@ -27,6 +27,8 @@ class Manager {
         void Close();
 
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
+        std::vector<std::shared_ptr<UIObject>>& GetUIObjectsFromState(const DellState& state);
+
         Tournament& GetRushGame();
         void ResetRushGame();
 
@@ -44,10 +46,11 @@ class Manager {
         void CreateStartup();
         void CreateStartupSamples(int total);
 
-        void ResetBattle(bool shouldResetPoints);
+        void ResetBattle(bool shouldResetAll);
         void UpdateCurrentBattle(int battle_pos);
         void UpdateCurrentBattlePoints(BattleTextBox* btb);
         void SelectWinner();
+        bool isAllBattlesCompleted();
         
     private:
         std::unordered_map<STATE, DellState> states;
