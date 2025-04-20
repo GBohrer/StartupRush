@@ -170,19 +170,23 @@ void Manager::CreateStartup() {
 
 void Manager::ResetBattle() {
 
-    Battle& battle = rushGame.GetCurrentBattle();
-    std::vector<Startup> s_aux;
-    s_aux.emplace_back(std::get<0>(battle.GetStartupA()));
-    s_aux.emplace_back(std::get<0>(battle.GetStartupB()));
+    Battle& currentBattle = rushGame.GetCurrentBattle();
 
     for (const auto& obj : GetUIObjects()) {
         BattleTextBox* btb = dynamic_cast<BattleTextBox*>(obj.get());
 
-        for(auto& [startup, value] : rushGame.GetStartups()) {
-        
-        }
+        if(btb && btb->isPressed()) {
+            auto& startup = (btb->GetID() == BoxID::EVENT_A)
+            ? currentBattle.GetStartupA()
+            : currentBattle.GetStartupB();
 
-        if (btb) btb->SetPressed(false);
+            auto& eventValue = btb->GetValue();
+            auto currentPoints = rushGame.GetStartupPointsByName(std::get<0>(startup).getName());
+            
+            int updatedPoints = currentPoints - eventValue;
+            rushGame.UpdateStartupPoints(std::get<0>(startup), updatedPoints);
+            btb->SetPressed(false);
+        }
     }
 
 }
@@ -192,19 +196,17 @@ void Manager::UpdateCurrentBattle(int battle_pos) {
 }
 
 void Manager::UpdateCurrentBattlePoints(BattleTextBox* btb) {
-    Startup startup;
     Battle& currentBattle = rushGame.GetCurrentBattle();
 
-    if(btb->GetID() == BoxID::EVENT_A) {
-        startup = std::get<0>(currentBattle.GetStartupA());
-    } else {
-        startup = std::get<0>(currentBattle.GetStartupB());
-    }
-    auto startup_points = rushGame.GetStartupPointsByName(startup.getName());
+    auto& startup = (btb->GetID() == BoxID::EVENT_A)
+    ? currentBattle.GetStartupA()
+    : currentBattle.GetStartupB();
 
-    auto& value = btb->GetValue();
-    btb->isPressed() ? value *= 1 : value *= -1;
-    rushGame.UpdateStartupPoints(startup, startup_points + value);
+    auto currentPoints = rushGame.GetStartupPointsByName(std::get<0>(startup).getName());
+
+    auto& eventValue = btb->GetValue();
+    int updatedPoints = currentPoints + (btb->isPressed() ? eventValue : -eventValue);
+    rushGame.UpdateStartupPoints(std::get<0>(startup), updatedPoints);
 }
 
 // INTERFACE

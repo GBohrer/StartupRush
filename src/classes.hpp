@@ -202,7 +202,7 @@ class Tournament {
             }
         }
 
-        void UpdateStartupPoints(Startup s, uint16_t points) {
+        void UpdateStartupPoints(Startup s, int16_t points) {
             for(auto& [startup, value] : startups) {
                 if(s.getName() == startup.getName()) {
                     value = points;

@@ -95,7 +95,7 @@ std::unordered_map<STATE, DellState> StatesInit () {
         std::make_shared<BattleTextBox>(BoxID::EVENT_B, std::vector<std::string>{"Investidor :("}, SCREEN_POS_CENTER_RIGHT_6, false, true, EventID::AngryInvestor, -6),
         std::make_shared<BattleTextBox>(BoxID::EVENT_B, std::vector<std::string>{"Fake News"}, SCREEN_POS_CENTER_RIGHT_7, false, true, EventID::FakeNews, -8),
 
-        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Voltar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
+        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
         std::make_shared<TextBox>(BoxID::CREATE, std::vector<std::string>{"Salvar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true) 
     };
     states.emplace(STATE::BATTLE, DellState(STATE::BATTLE, screenObjs));
