@@ -15,14 +15,11 @@ public:
     std::string getName() const;
     std::string getSlogan() const;
     uint16_t getYear() const;
-    bool GetCompeting() const;
-    void SetCompeting(bool v);
 
 private:
     std::string name;
     std::string slogan;
     uint16_t year;
-    bool competing;
 };
 
 enum EventID {
@@ -35,6 +32,7 @@ enum EventID {
 
 class BattleEvent {
 public:
+    BattleEvent() {};
     BattleEvent(EventID id, int8_t val);
 
     EventID getID() const;
@@ -47,34 +45,40 @@ private:
     int8_t value;
 };
 
-enum Status {
+enum BattleStatus {
     Pending,
     Complete
 };
 
-class Battle {
-public:
-    Battle();
-    Battle(const Startup& a, const Startup& b);
-
-    const Startup& GetStartupA() const;
-    const Startup& GetStartupB() const;
-    Status GetStatus() const;
-    void SetStatus(Status s);
-
-private:
-    Startup startup_a;
-    Startup startup_b;
-    Status status;
+enum Status {
+    AVALIABLE,
+    DESQUALIFIED,
+    QUALIFIED
 };
 
 typedef struct StartupEntry {
     Startup startup;
     int16_t totalPoints;
+    Status status;
     std::vector<BattleEvent> events;
 
 } StartupEntry;
 
+class Battle {
+public:
+    Battle();
+    Battle(const StartupEntry& a, const StartupEntry& b);
+
+    const StartupEntry& GetStartupA() const;
+    const StartupEntry& GetStartupB() const;
+    BattleStatus GetStatus() const;
+    void SetStatus(BattleStatus s);
+
+private:
+    StartupEntry startup_a;
+    StartupEntry startup_b;
+    BattleStatus status;
+};
 
 class Tournament {
 public:
@@ -84,12 +88,13 @@ public:
     void AddStartup(Startup s);
     int GetTotalStartups();
     std::vector<StartupEntry>& GetStartups();
-    int16_t GetStartupPointsByName(std::string name);
+    int16_t& GetStartupPointsByName(std::string name);
     void PrintStartups();
     bool HasStartupsAvaliable();
     void ResetStartups();
-    void UpdateStartupPoints(Startup s, int16_t points);
+    void AddStartupPoints(Startup s, int16_t points);
     void UpdateStartupBattleEvent(Startup s, BattleEvent be);
+    void ClearStartupBattleEvents(Startup s);
     
     std::vector<BattleEvent>& GetBattleEvents();
     std::vector<Battle>& GetBattles();

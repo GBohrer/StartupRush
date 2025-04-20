@@ -144,6 +144,7 @@ void Handle_ENTRY(Manager& manager) {
                     if (totalBattles == 3) manager.SetCurrentState(STATE::TOURNAMENT_06);
                     if (totalBattles == 2) manager.SetCurrentState(STATE::TOURNAMENT_04);
                     if (totalBattles == 1) manager.SetCurrentState(STATE::TOURNAMENT_02);
+                    if (totalBattles == 0) manager.CreateMessage(PopUpMessage("DEU ERRO!!!", SCREEN_POS_CENTER));
                     return;
                 }
                 break;

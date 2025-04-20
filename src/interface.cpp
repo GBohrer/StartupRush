@@ -247,9 +247,9 @@ void PrintBattles(Tournament t) {
 
     for (size_t i=0; i < battles.size(); i++) {
         const auto& startupA = battles[i].GetStartupA();
-        std::string nameA = startupA.getName();
+        std::string nameA = startupA.startup.getName();
         const auto& startupB = battles[i].GetStartupB();
-        std::string nameB = startupB.getName();
+        std::string nameB = startupB.startup.getName();
 
         stream << "Batalha " << i+1 << ": " << nameA << "  Vs.  " << nameB;
         text = stream.str();
@@ -266,7 +266,7 @@ void PrintCurrentBattleAndPoints(Tournament t) {
     Battle& battle = t.GetCurrentBattle();
 
     const auto& startupA = battle.GetStartupA();
-    const char* nameA = startupA.getName().c_str();
+    const char* nameA = startupA.startup.getName().c_str();
     
     const char* pointsA = std::to_string(t.GetStartupPointsByName(nameA)).c_str();
     
@@ -274,7 +274,7 @@ void PrintCurrentBattleAndPoints(Tournament t) {
     DrawText(pointsA,SCREEN_POS_CENTER_LEFT_2.x - MeasureText(pointsA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
     
     const auto& startupB = battle.GetStartupB();
-    const char* nameB = startupB.getName().c_str();
+    const char* nameB = startupB.startup.getName().c_str();
     const char* pointsB = std::to_string(t.GetStartupPointsByName(nameB)).c_str();
 
     DrawText(nameB,SCREEN_POS_CENTER_RIGHT_1.x - MeasureText(nameB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);

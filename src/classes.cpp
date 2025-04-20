@@ -6,10 +6,10 @@
 
 
 // STARTUP
-Startup::Startup() : name(""), slogan(""), year(0), competing(false) {}
+Startup::Startup() : name(""), slogan(""), year(0) {}
 
 Startup::Startup(std::string n, std::string s, uint16_t y)
-: name(n), slogan(s), year(y), competing(false) {}
+: name(n), slogan(s), year(y) {}
 
 std::string Startup::getName() const {
     return name;
@@ -21,14 +21,6 @@ std::string Startup::getSlogan() const {
 
 uint16_t Startup::getYear() const {
     return year;
-}
-
-bool Startup::GetCompeting() const {
-    return competing;
-}
-
-void Startup::SetCompeting(bool v) {
-    this->competing = v;
 }
 
 // BATTLE EVENT
@@ -54,22 +46,22 @@ void BattleEvent::setValue(int8_t newValue) {
 // BATTLE
 Battle::Battle() {}
 
-Battle::Battle(const Startup& a, const Startup& b)
-: startup_a(a), startup_b(b), status(Status::Pending) {}
+Battle::Battle(const StartupEntry& a, const StartupEntry& b)
+: startup_a(a), startup_b(b), status(BattleStatus::Pending) {}
 
-const Startup& Battle::GetStartupA() const {
+const StartupEntry& Battle::GetStartupA() const {
     return startup_a;
 }
 
-const Startup& Battle::GetStartupB() const {
+const StartupEntry& Battle::GetStartupB() const {
     return startup_b;
 }
 
-Status Battle::GetStatus() const {
+BattleStatus Battle::GetStatus() const {
     return status;
 }
 
-void Battle::SetStatus(Status s) {
+void Battle::SetStatus(BattleStatus s) {
     status = s;
 }
 
@@ -97,7 +89,7 @@ void Tournament::Init() {
 }
 
 void Tournament::AddStartup(Startup s) {
-    startups.emplace_back(StartupEntry{s,(int16_t)70, {}});
+    startups.emplace_back(StartupEntry{s,(int16_t)70, Status::AVALIABLE, {}});
 }
 
 int Tournament::GetTotalStartups() {
@@ -109,51 +101,58 @@ std::vector<StartupEntry>& Tournament::GetStartups() {
     return startups;
 }
 
-int16_t Tournament::GetStartupPointsByName(std::string name) {
-    for (const auto& [startup, value, events] : startups) {
+int16_t& Tournament::GetStartupPointsByName(std::string name) {
+    for (auto& [startup, value, status, events] : startups) {
         if (startup.getName() == name) {
             return value;
         }
     }
-    return 0;
 }
 
 void Tournament::PrintStartups() {
-    for (const auto& [startup, value, events] : startups) {
+    for (const auto& [startup, value, status, events] : startups) {
         std::cout << "Nome: " << startup.getName() << std::endl;
-        std::cout << "Slogan: " << startup.getSlogan() << std::endl;
-        std::cout << "Year: " << startup.getYear() << std::endl;
         std::cout << "Points: " << value << std::endl;
+        std::cout << "Status: " << status << std::endl;
         printf("\n");
     }
 }
 
 bool Tournament::HasStartupsAvaliable() {
-    for (const auto& [startup, value, events] : startups) {
-        if (!(startup.GetCompeting())) return true;
+    for (const auto& startup : startups) {
+        if (startup.status == Status::AVALIABLE) return true;
     }
     return false;
 }
 
 void Tournament::ResetStartups() {
-    for (auto& [startup, value, events] : startups) {
-        startup.SetCompeting(false);
-        value = 70;
+    for (auto& startup : startups) {
+        startup.status = Status::AVALIABLE;
+        startup.totalPoints = 70;
+        startup.events.clear();
     }
 }
 
-void Tournament::UpdateStartupPoints(Startup s, int16_t points) {
-    for(auto& [startup, value, events] : startups) {
+void Tournament::AddStartupPoints(Startup s, int16_t points) {
+    for(auto& [startup, value, status, events] : startups) {
         if(s.getName() == startup.getName()) {
-            value = points;
+            value += points;
         }
     }
 }
 
 void Tournament::UpdateStartupBattleEvent(Startup s, BattleEvent be) {
-    for(auto& [startup, value, battleEvents] : startups) {
+    for(auto& [startup, value, status, events] : startups) {
         if(s.getName() == startup.getName()) {
-            battleEvents.emplace_back(be);
+            events.emplace_back(be);
+        }
+    }
+}
+
+void Tournament::ClearStartupBattleEvents(Startup s) {
+    for(auto& [startup, value, status, events] : startups) {
+        if(s.getName() == startup.getName()) {
+            events.clear();
         }
     }
 }
@@ -177,15 +176,15 @@ Battle& Tournament::GetCurrentBattle() {
 int Tournament::MakeBattles() {
     int total = GetTotalStartups();
     int i = 0;
-    std::vector<Startup> select_startups;
+    std::vector<StartupEntry> select_startups;
 
     while (HasStartupsAvaliable()) {
         while (i < 2) {
             int pos = rand() % total;
-            Startup& s_aux = startups[pos].startup;
+            StartupEntry& s_aux = startups[pos];
 
-            if (!(s_aux.GetCompeting())) {
-                s_aux.SetCompeting(true);
+            if (s_aux.status == Status::AVALIABLE) {
+                s_aux.status = Status::QUALIFIED;
                 select_startups.emplace_back(s_aux);
                 i++;
             }
