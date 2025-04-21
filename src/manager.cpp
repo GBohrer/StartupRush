@@ -76,6 +76,18 @@ std::vector<std::shared_ptr<UIObject>>& Manager::GetUIObjectsFromState(const Del
     return states[ds.state].screenObjs;
 }
 
+void Manager::ResetTextBoxFromState(DellState s) {
+    for (auto& obj : GetUIObjectsFromState(s)) {
+        TextBox* tb = dynamic_cast<TextBox*>(obj.get());
+
+        if(tb && tb->pressed) {
+            tb->isClickable = false;
+            tb->SetCurrentText(1);
+        }
+    }
+}
+
+
 Tournament& Manager::GetRushGame() {
     return this->rushGame;
 }
@@ -84,6 +96,18 @@ void Manager::ResetRushGame() {
     this->rushGame.ClearBattles();
     this->rushGame.ResetStartups();
     this->states = StatesInit();
+}
+
+void Manager::SetRushGameChampion() {
+    int16_t max = 0;
+    StartupEntry champion;
+    for(const auto& startup : rushGame.GetStartups()) {
+        if (startup.totalPoints > max) {
+            max = startup.totalPoints;
+            champion = startup;
+        }
+    }
+    rushGame.SetChampion(champion);
 }
 
 void Manager::SetCurrentState(STATE state) {
@@ -177,7 +201,6 @@ void Manager::ResetBattle(bool shouldResetAll) {
 
     Battle& currentBattle = rushGame.GetCurrentBattle();
 
-
     for (const auto& obj : GetUIObjects()) {
         BattleTextBox* btb = dynamic_cast<BattleTextBox*>(obj.get());
 
@@ -198,16 +221,7 @@ void Manager::ResetBattle(bool shouldResetAll) {
     }
 
     // Atualiza a tela do torneio apenas quando os pontos são salvos!
-    if (shouldResetAll) {
-        for (const auto& obj : GetUIObjectsFromState(lastState)) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-
-            if(tb && tb->pressed) {
-                tb->isClickable = false;
-                tb->SetCurrentText(1);
-            }
-        }
-    }
+    //if (shouldResetAll) ResetTextBoxFromState(lastState);
 }
 
 void Manager::UpdateCurrentBattle(int battle_pos) {
@@ -268,22 +282,15 @@ void Manager::SelectWinner() {
     currentBattle.SetStatus(BattleStatus::Complete);
     rushGame.UpdateBattles(currentBattle);
 
-     // Pegar UIObjects da tela anterior
-        // quando for a com pressed=true, set isClicklabe=false
-    for (auto& obj : GetUIObjectsFromState(lastState)) {
-        TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-
-         if(tb && tb->pressed) {
-            tb->isClickable = false;
-            tb->SetCurrentText(1);
-        }
-    }
+    ResetTextBoxFromState(lastState);
 }
 
 bool Manager::isAllBattlesCompleted() {
     for (const auto& battle : rushGame.GetBattles()) {
         if (battle.GetStatus() == BattleStatus::Pending) return false;
     }
+    //this->states = StatesInit();
+
     return true;
 }
 

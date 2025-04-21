@@ -101,6 +101,25 @@ std::unordered_map<STATE, DellState> StatesInit () {
     states.emplace(STATE::BATTLE, DellState(STATE::BATTLE, screenObjs));
     screenObjs.clear();
 
+    // CHAMPION
+    screenObjs = {
+        std::make_shared<SimpleText>("A STARTUP CAMPEÃ É...", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Ver Resultados"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
+    
+    };
+    states.emplace(STATE::CHAMPION, DellState(STATE::CHAMPION, screenObjs));
+    screenObjs.clear(); 
+
+    // RESULTS
+    screenObjs = {
+        std::make_shared<SimpleText>("RESULTADOS", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Voltar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
+        std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Sair"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
+    
+    };
+    states.emplace(STATE::RESULTS, DellState(STATE::RESULTS, screenObjs));
+    screenObjs.clear(); 
+
     // LEAVING
     screenObjs = {
         std::make_shared<SimpleText>("SAIR DO SISTEMA?", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
@@ -122,6 +141,8 @@ std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
     {STATE::TOURNAMENT_04, Handle_TOURNAMENT_04},
     {STATE::TOURNAMENT_02, Handle_TOURNAMENT_02},
     {STATE::BATTLE, Handle_BATTLE},
+    {STATE::CHAMPION, Handle_CHAMPION},
+    {STATE::RESULTS, Handle_RESULTS},
     {STATE::LEAVING, Handle_LEAVING},
 };
 
@@ -143,11 +164,11 @@ void Handle_ENTRY(Manager& manager) {
                     if (totalBattles == 4) manager.SetCurrentState(STATE::TOURNAMENT_08);
                     if (totalBattles == 3) manager.SetCurrentState(STATE::TOURNAMENT_06);
                     if (totalBattles == 2) manager.SetCurrentState(STATE::TOURNAMENT_04);
-                    if (totalBattles == 0) manager.CreateMessage(PopUpMessage("DEU ERRO!!!", SCREEN_POS_CENTER));
                     return;
                 }
                 break;
             case BoxID::EXIT:
+                manager.UpdateLastState();
                 manager.SetCurrentState(STATE::LEAVING);
                 return;
             default:
@@ -286,16 +307,23 @@ void Handle_BATTLE(Manager& manager) {
 
                 if (manager.isAllBattlesCompleted()){
                     int totalBattles = manager.GetRushGame().MakeBattles();
+                    
                     if (totalBattles == 2) manager.SetCurrentState(STATE::TOURNAMENT_04);
                     if (totalBattles == 1) manager.SetCurrentState(STATE::TOURNAMENT_02);
+                    if (totalBattles == 0) {
+                        manager.SetRushGameChampion();
+                        manager.SetCurrentState(STATE::CHAMPION);
+                    }
+                    return;
                 }
-
                 manager.ReturnToLastState();
                 return;
+
             case BoxID::BACK:
                 manager.ResetBattle(true);
                 manager.ReturnToLastState();
                 return;
+
             default:
                 BattleTextBox* btb = dynamic_cast<BattleTextBox*>(tb);
                 manager.UpdateCurrentBattlePoints(btb);
@@ -305,11 +333,40 @@ void Handle_BATTLE(Manager& manager) {
     PrintCurrentBattleAndPoints(manager.GetRushGame());
 }
 
+void Handle_CHAMPION(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::YES:
+                manager.SetCurrentState(STATE::RESULTS);
+            default:
+                break;
+        }
+    });
+    PrintChampionStartup(manager.GetRushGame());
+}
+
+void Handle_RESULTS(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::BACK:
+                manager.ResetRushGame();
+                manager.SetCurrentState(STATE::ENTRY);
+                return;
+            case BoxID::EXIT:
+                manager.UpdateLastState();
+                manager.SetCurrentState(STATE::LEAVING);
+            default:
+                break;
+        }
+    });
+    PrintAllResults(manager.GetRushGame());
+}
+
 void Handle_LEAVING(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
             case BoxID::NO:
-                manager.SetCurrentState(STATE::ENTRY);
+                manager.ReturnToLastState();
                 return;
             case BoxID::YES:
                 manager.Close();

@@ -28,9 +28,7 @@ class Manager {
 
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
         std::vector<std::shared_ptr<UIObject>>& GetUIObjectsFromState(const DellState& state);
-
-        Tournament& GetRushGame();
-        void ResetRushGame();
+        void ResetTextBoxFromState(DellState s);
 
         void SetCurrentState(STATE state);
         void UpdateLastState();
@@ -39,10 +37,14 @@ class Manager {
         void CreateMessage(PopUpMessage m);
         bool HasMessages();
 
+        Tournament& GetRushGame();
+        bool isTournamentReady();
+        void ResetRushGame();
+        void SetRushGameChampion();
+
         bool isPromptsOk();
         void ClearPromtps();
 
-        bool isTournamentReady();
         void CreateStartup();
         void CreateStartupSamples(int total);
 
@@ -66,7 +68,6 @@ class Manager {
 
 void Handle_UI(Manager& manager, std::function<void(Box*)> callback);
 
-
 // State Handlers
 
 void Handle_ENTRY(Manager& manager);
@@ -76,6 +77,8 @@ void Handle_TOURNAMENT_06(Manager& manager);
 void Handle_TOURNAMENT_04(Manager& manager);
 void Handle_TOURNAMENT_02(Manager& manager);
 void Handle_BATTLE(Manager& manager);
+void Handle_CHAMPION(Manager& manager);
+void Handle_RESULTS(Manager& manager);
 void Handle_LEAVING(Manager& manager);
 
 extern std::map<STATE, std::function<void(Manager&)>> stateHandlers;

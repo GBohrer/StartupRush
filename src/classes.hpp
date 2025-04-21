@@ -87,6 +87,7 @@ public:
 
     void AddStartup(Startup s);
     int GetTotalStartups();
+    int GetTotalStartupsDesqualified();
     std::vector<StartupEntry>& GetStartups();
     void UpdateStartups(StartupEntry s);
     int16_t& GetStartupPointsByName(std::string name);
@@ -95,6 +96,7 @@ public:
     void ResetStartups();
     void AddStartupPoints(Startup s, int16_t points);
     void UpdateStartupStatus(Startup s, Status ss);
+
     void UpdateStartupBattleEvent(Startup s, BattleEvent be);
     void ClearStartupBattleEvents(Startup s);
     
@@ -111,12 +113,16 @@ public:
     int MakeBattles();
     void ClearBattles();
 
+    void SetChampion(StartupEntry s);
+    StartupEntry GetChampion();
+
     static const uint8_t min_startups;
     static const uint8_t max_startups;
 
 private:
     std::vector<BattleEvent> events;
     std::vector<StartupEntry> startups;
+    StartupEntry champion;
     std::vector<Battle> battles;
     Battle currentBattle;
     int currentBattleIndex;

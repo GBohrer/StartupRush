@@ -179,5 +179,7 @@ void PrintEventDescription(EventID id);
 void PrintAllStartupsInfo(std::vector<std::tuple<Startup, uint16_t>> startups);
 void PrintBattles(Tournament t);
 void PrintCurrentBattleAndPoints(Tournament t);
+void PrintChampionStartup(Tournament t);
+void PrintAllResults(Tournament t);
 
 #endif

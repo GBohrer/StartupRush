@@ -256,11 +256,22 @@ void PrintBattles(Tournament t) {
         auto& startupB = battles[i].GetStartupB();
         std::string nameB = startupB.startup.getName();
 
-        stream << "Batalha " << i+1 << ": " << nameA << "  Vs.  " << nameB;
-        text = stream.str();
+        if(battles[i].GetStatus() == BattleStatus::Pending) {
+            stream << "Batalha " << i+1 << ": " << nameA << "  Vs.  " << nameB;
 
+        } else {
+            int pointsA = t.GetStartupPointsByName(nameA);
+            int pointsB = t.GetStartupPointsByName(nameB);
+
+            StartupEntry higher = (pointsA > pointsB
+                                    ? startupA
+                                    : startupB);
+            stream << "Vencedor da Batalha " << i+1 << ": " << higher.startup.getName();
+        }
+
+        text = stream.str();
         DrawText(text.c_str(), SCREEN_POS_CENTER_2.x - 300, SCREEN_POS_CENTER_2.y + offset, TEXTBOX_FONTSIZE+10, LIGHTGRAY);
-        
+    
         text.clear(); stream.str("");
         offset += 70;
     }
@@ -274,7 +285,8 @@ void PrintCurrentBattleAndPoints(Tournament t) {
     const char* nameA = startupA.startup.getName().c_str();
     
     const char* pointsA = std::to_string(t.GetStartupPointsByName(nameA)).c_str();
-    
+
+    // Renderizar os pontos de CADA BattleEvent ao lado (esquerdo ou direito) de suas respectivas TextBox
     DrawText(nameA,SCREEN_POS_CENTER_LEFT_1.x - MeasureText(nameA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
     DrawText(pointsA,SCREEN_POS_CENTER_LEFT_2.x - MeasureText(pointsA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
     
@@ -284,7 +296,38 @@ void PrintCurrentBattleAndPoints(Tournament t) {
 
     DrawText(nameB,SCREEN_POS_CENTER_RIGHT_1.x - MeasureText(nameB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
     DrawText(pointsB,SCREEN_POS_CENTER_RIGHT_2.x - MeasureText(pointsB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+}
+
+void PrintChampionStartup(Tournament t) {
+    const auto& champion = t.GetChampion();
+    std::stringstream stream;
+    std::string text;
+    int text_offset;
+
+    text = champion.startup.getName();
+    text_offset = MeasureText(text.c_str(), TITLE_FONTSIZE)/2;
+    DrawText(text.c_str(), SCREEN_POS_CENTER_4.x - text_offset, SCREEN_POS_CENTER_4.y, TITLE_FONTSIZE, COLOR_MOUSE_HOVER);
+
+    // Render da pontuação
+    text.clear(); stream.str("");
+    stream << "Com " << champion.totalPoints << " pontos!";
+    text = stream.str();
+    text_offset = MeasureText(text.c_str(), TITLE_FONTSIZE)/2;
+    DrawText(text.c_str(), SCREEN_POS_CENTER_6.x - text_offset, SCREEN_POS_CENTER_6.y, TITLE_FONTSIZE, COLOR_MOUSE_HOVER);
+
+    // Render do slogan
+    text.clear(); stream.str("");
+    stream << '"' << champion.startup.getSlogan() << '"';
+    text = stream.str();
+    text_offset = MeasureText(text.c_str(), TEXTBOX_FONTSIZE_2)/2;
+    DrawText(text.c_str(), SCREEN_POS_CENTER_7.x - text_offset, SCREEN_POS_CENTER_7.y, TEXTBOX_FONTSIZE_2, COLOR_MOUSE_HOVER);
+}
+
+void PrintAllResults(Tournament t) {
+    std::stringstream stream;
+    std::string text;
+    int text_offset;
+
     
 
-    // Renderizar os pontos de CADA BattleEvent ao lado (esquerdo ou direito) de suas respectivas TextBox
 }

@@ -98,15 +98,22 @@ int Tournament::GetTotalStartups() {
     return startups.size();
 }
 
+int Tournament::GetTotalStartupsDesqualified() {
+    int total = 0;
+    for(const auto& startup : startups) {
+        if (startup.status == Status::DESQUALIFIED) total++;
+    }
+    return total;
+}
+
 std::vector<StartupEntry>& Tournament::GetStartups() {
     return startups;
 }
 
 void Tournament::UpdateStartups(StartupEntry s) {
-    for(int i=0; i < startups.size(); i++) {
-        if(startups[i].startup.getName() == s.startup.getName()) {
-            startups[i] = s;
-        }
+    for(auto& startup : startups) {
+        if(startup.startup.getName() == s.startup.getName())
+            startup = s;
     }
 }
 
@@ -207,6 +214,22 @@ int Tournament::MakeBattles() {
     int i = 0;
     std::vector<StartupEntry> select_startups;
 
+    battles.clear();
+
+    int qtd = GetTotalStartupsDesqualified();
+
+    // Caso especial de quando começa torneio com 6 startups!
+    if (qtd == 3) {
+        std::cout << "CHEGUEI AQUI!!!" << std::endl;
+        //Verificar os pontos das startups.
+        //      REGRA: "desempate" com as 2 piores startups
+        //              A que ganhar fica para competir em TOURNAMENT_01
+        //              A que perder toma State::DESQUALIFIED
+    }
+
+    // Caso quando o torneio termina!
+    if (qtd == total-1) return 0;
+
     while (HasStartupsAvaliable()) {
         while (i < 2) {
             int pos = rand() % total;
@@ -224,10 +247,17 @@ int Tournament::MakeBattles() {
         select_startups.clear();
         i = 0;
     }
-
     return battles.size();
 }
 
 void Tournament::ClearBattles() {
     this->battles.clear();
+}
+
+void Tournament::SetChampion(StartupEntry s) {
+    this->champion = s;
+}
+
+StartupEntry Tournament::GetChampion() {
+    return champion;
 }
