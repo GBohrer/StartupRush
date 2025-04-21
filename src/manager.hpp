@@ -28,7 +28,7 @@ class Manager {
 
         std::vector<std::shared_ptr<UIObject>>& GetUIObjects();
         std::vector<std::shared_ptr<UIObject>>& GetUIObjectsFromState(const DellState& state);
-        void ResetTextBoxFromState(DellState s);
+        void BlockTextBoxFromState(DellState s, int index);
 
         void SetCurrentState(STATE state);
         void UpdateLastState();

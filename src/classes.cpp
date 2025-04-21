@@ -86,7 +86,7 @@ void Tournament::Init() {
     battles.reserve(4);
     currentBattleIndex = -1;
 
-    srand((unsigned int)GetTime());
+    srand((unsigned int)GetTime()* 3.14159265);
 }
 
 void Tournament::AddStartup(Startup s) {

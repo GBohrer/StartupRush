@@ -310,10 +310,10 @@ void PrintChampionStartup(Tournament t) {
 
     // Render da pontuação
     text.clear(); stream.str("");
-    stream << "Com " << champion.totalPoints << " pontos!";
+    stream << "com " << champion.totalPoints << " pontos!";
     text = stream.str();
-    text_offset = MeasureText(text.c_str(), TITLE_FONTSIZE)/2;
-    DrawText(text.c_str(), SCREEN_POS_CENTER_6.x - text_offset, SCREEN_POS_CENTER_6.y, TITLE_FONTSIZE, COLOR_MOUSE_HOVER);
+    text_offset = MeasureText(text.c_str(), TEXTBOX_FONTSIZE_2)/2;
+    DrawText(text.c_str(), SCREEN_POS_CENTER_5.x - text_offset, SCREEN_POS_CENTER_5.y, TEXTBOX_FONTSIZE_2, COLOR_MOUSE_HOVER);
 
     // Render do slogan
     text.clear(); stream.str("");
@@ -328,6 +328,6 @@ void PrintAllResults(Tournament t) {
     std::string text;
     int text_offset;
 
-    
+
 
 }

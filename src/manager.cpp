@@ -76,11 +76,11 @@ std::vector<std::shared_ptr<UIObject>>& Manager::GetUIObjectsFromState(const Del
     return states[ds.state].screenObjs;
 }
 
-void Manager::ResetTextBoxFromState(DellState s) {
+void Manager::BlockTextBoxFromState(DellState s, int index) {
     for (auto& obj : GetUIObjectsFromState(s)) {
         TextBox* tb = dynamic_cast<TextBox*>(obj.get());
 
-        if(tb && tb->pressed) {
+        if(tb && tb->pressed && tb->GetID() == index+1) {
             tb->isClickable = false;
             tb->SetCurrentText(1);
         }
@@ -206,6 +206,8 @@ void Manager::ResetBattle(bool shouldResetAll) {
 
         // Reset dos botões de eventos + retirada dos pontos baseada nestes botões
         if(btb && btb->isPressed()) {
+
+            // Retira os pontos
             if(shouldResetAll){
                 auto& startup_entry = (btb->GetID() == BoxID::EVENT_A)
                 ? currentBattle.GetStartupA()
@@ -216,6 +218,7 @@ void Manager::ResetBattle(bool shouldResetAll) {
                 rushGame.AddStartupPoints(startup_entry.startup, -eventValue);
                 rushGame.ClearStartupBattleEvents(startup_entry.startup);
             }
+            // Reset do botão
             btb->SetPressed(false);
         }
     }
@@ -282,7 +285,7 @@ void Manager::SelectWinner() {
     currentBattle.SetStatus(BattleStatus::Complete);
     rushGame.UpdateBattles(currentBattle);
 
-    ResetTextBoxFromState(lastState);
+    BlockTextBoxFromState(lastState, rushGame.GetCurrentBattleIndex());
 }
 
 bool Manager::isAllBattlesCompleted() {
@@ -361,16 +364,30 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
 
 void Manager::CreateStartupSamples(int total) {
     std::vector<Startup> samples;
-    samples.emplace_back(Startup("Microsoft", "texto1", 1987));
-    samples.emplace_back(Startup("Google", "texto2", 1997));
-    samples.emplace_back(Startup("Nintendo", "texto3", 1963));
-    samples.emplace_back(Startup("Rockstar", "texto4", 1999));
-    samples.emplace_back(Startup("Amazon", "texto5", 2004));
-    samples.emplace_back(Startup("Netflix", "texto6", 2005));
-    samples.emplace_back(Startup("Meta", "texto7", 2008));
-    samples.emplace_back(Startup("Apple", "texto1", 1979));
+    samples.emplace_back(Startup("Microsoft", "Be what is next.", 1975));
+    samples.emplace_back(Startup("Google", "Do not be evil.", 1998));
+    samples.emplace_back(Startup("Nintendo", "There is no play like it.", 1889));
+    samples.emplace_back(Startup("Rockstar", "Making fun of the world since 1998.", 1998));
+    samples.emplace_back(Startup("Amazon", "Work hard. Have fun. Make history.", 1994));
+    samples.emplace_back(Startup("Netflix", "See what is next.", 1997));
+    samples.emplace_back(Startup("Meta", "Move fast.", 2004));
+    samples.emplace_back(Startup("Apple", "Think different.", 1976));
+    samples.emplace_back(Startup("IBM", "Think.", 1911));
+    samples.emplace_back(Startup("Intel", "Intel Inside.", 1968));
+    samples.emplace_back(Startup("Adobe", "Changing the world through digital experiences.", 1982));
+    samples.emplace_back(Startup("Oracle", "Data is the new oil.", 1977));
+    samples.emplace_back(Startup("TikTok", "Make every second count.", 2016));
+    samples.emplace_back(Startup("Naughty Dog", "You cannot stop this.", 1984));
+    samples.emplace_back(Startup("Toyota", "Let is Go Places.", 1937));
+    samples.emplace_back(Startup("Airbnb", "Belong anywhere.", 2008));
+    samples.emplace_back(Startup("Discord", "Your place to talk.", 2015));
+    samples.emplace_back(Startup("Sony", "Make. Believe.", 1946));
+    
+    total = std::min(total, static_cast<int>(samples.size()));
 
     for (int i=0 ; i < total; i++) {
-        rushGame.AddStartup(samples[i]);
+        int randomIndex = rand() % samples.size();
+        rushGame.AddStartup(samples[randomIndex]);
+        samples.erase(samples.begin()+randomIndex);
     }
 }
