@@ -67,10 +67,10 @@ typedef struct StartupEntry {
 class Battle {
 public:
     Battle();
-    Battle(const StartupEntry& a, const StartupEntry& b);
+    Battle(StartupEntry& a,StartupEntry& b);
 
-    const StartupEntry& GetStartupA() const;
-    const StartupEntry& GetStartupB() const;
+    StartupEntry& GetStartupA();
+    StartupEntry& GetStartupB();
     BattleStatus GetStatus() const;
     void SetStatus(BattleStatus s);
 
@@ -88,18 +88,26 @@ public:
     void AddStartup(Startup s);
     int GetTotalStartups();
     std::vector<StartupEntry>& GetStartups();
+    void UpdateStartups(StartupEntry s);
     int16_t& GetStartupPointsByName(std::string name);
     void PrintStartups();
     bool HasStartupsAvaliable();
     void ResetStartups();
     void AddStartupPoints(Startup s, int16_t points);
+    void UpdateStartupStatus(Startup s, Status ss);
     void UpdateStartupBattleEvent(Startup s, BattleEvent be);
     void ClearStartupBattleEvents(Startup s);
     
     std::vector<BattleEvent>& GetBattleEvents();
+
     std::vector<Battle>& GetBattles();
+    void UpdateBattles(Battle battle);
+
     void SetCurrentBattle(Battle b);
+    void SetCurrentBattleIndex(int i);
     Battle& GetCurrentBattle();
+    int GetCurrentBattleIndex();
+
     int MakeBattles();
     void ClearBattles();
 
@@ -111,6 +119,7 @@ private:
     std::vector<StartupEntry> startups;
     std::vector<Battle> battles;
     Battle currentBattle;
+    int currentBattleIndex;
 };
 
 #endif

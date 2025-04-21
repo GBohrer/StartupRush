@@ -212,6 +212,7 @@ void Manager::ResetBattle(bool shouldResetAll) {
 
 void Manager::UpdateCurrentBattle(int battle_pos) {
     rushGame.SetCurrentBattle(rushGame.GetBattles()[battle_pos-1]);
+    rushGame.SetCurrentBattleIndex(battle_pos-1);
 }
 
 void Manager::UpdateCurrentBattlePoints(BattleTextBox* btb) {
@@ -231,7 +232,7 @@ void Manager::UpdateCurrentBattlePoints(BattleTextBox* btb) {
 }
 
 void Manager::SelectWinner() {
-    Battle& currentBattle = rushGame.GetCurrentBattle();
+    auto& currentBattle = rushGame.GetCurrentBattle();
     auto& startupA_entry = currentBattle.GetStartupA();
     auto& startupB_entry = currentBattle.GetStartupB();
     auto& pointsA = rushGame.GetStartupPointsByName(startupA_entry.startup.getName());
@@ -241,38 +242,42 @@ void Manager::SelectWinner() {
     StartupEntry loser;
 
     if (pointsA == pointsB) {
-        CreateMessage(PopUpMessage("Shark Fight...", SCREEN_POS_CENTER_3));
-        
+        CreateMessage(PopUpMessage("Shark Fight...", SCREEN_POS_CENTER_6));
+
         if (rand() % 2 == 0) {
             winner = startupA_entry;
-            loser = startupB_entry;
+            loser  = startupB_entry;
         } else {
             winner = startupB_entry;
-            loser = startupA_entry;
+            loser  = startupA_entry;
         }
-
         rushGame.AddStartupPoints(winner.startup, 2);
-        SelectWinner();
 
+    } else if (pointsA > pointsB) {
+        winner = startupA_entry;
+        loser = startupB_entry;
     } else {
-        pointsA > pointsB ? winner = startupA_entry : winner = startupB_entry;
-
-        rushGame.AddStartupPoints(winner.startup, 30);
-        currentBattle.SetStatus(BattleStatus::Complete);
-        loser.status = Status::DESQUALIFIED;
-        
-        // Pegar UIObjects da tela anterior
-            // quando for a com pressed=true, set isClicklabe=false
-        for (auto& obj : GetUIObjectsFromState(lastState)) {
-            TextBox* tb = dynamic_cast<TextBox*>(obj.get());
-
-            if(tb && tb->pressed) {
-                tb->isClickable = false;
-                tb->SetCurrentText(1);
-            }
-        }
+        winner = startupB_entry;
+        loser = startupA_entry;
     }
 
+    rushGame.AddStartupPoints(winner.startup, 30);
+    rushGame.UpdateStartupStatus(winner.startup, Status::AVALIABLE);
+    rushGame.UpdateStartupStatus(loser.startup, Status::DESQUALIFIED);
+
+    currentBattle.SetStatus(BattleStatus::Complete);
+    rushGame.UpdateBattles(currentBattle);
+
+     // Pegar UIObjects da tela anterior
+        // quando for a com pressed=true, set isClicklabe=false
+    for (auto& obj : GetUIObjectsFromState(lastState)) {
+        TextBox* tb = dynamic_cast<TextBox*>(obj.get());
+
+         if(tb && tb->pressed) {
+            tb->isClickable = false;
+            tb->SetCurrentText(1);
+        }
+    }
 }
 
 bool Manager::isAllBattlesCompleted() {

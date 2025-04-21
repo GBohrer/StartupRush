@@ -46,14 +46,14 @@ void BattleEvent::setValue(int8_t newValue) {
 // BATTLE
 Battle::Battle() {}
 
-Battle::Battle(const StartupEntry& a, const StartupEntry& b)
+Battle::Battle(StartupEntry& a, StartupEntry& b)
 : startup_a(a), startup_b(b), status(BattleStatus::Pending) {}
 
-const StartupEntry& Battle::GetStartupA() const {
+StartupEntry& Battle::GetStartupA() {
     return startup_a;
 }
 
-const StartupEntry& Battle::GetStartupB() const {
+StartupEntry& Battle::GetStartupB() {
     return startup_b;
 }
 
@@ -84,6 +84,7 @@ void Tournament::Init() {
 
     battles.clear();
     battles.reserve(4);
+    currentBattleIndex = -1;
 
     srand((unsigned int)GetTime());
 }
@@ -99,6 +100,14 @@ int Tournament::GetTotalStartups() {
 
 std::vector<StartupEntry>& Tournament::GetStartups() {
     return startups;
+}
+
+void Tournament::UpdateStartups(StartupEntry s) {
+    for(int i=0; i < startups.size(); i++) {
+        if(startups[i].startup.getName() == s.startup.getName()) {
+            startups[i] = s;
+        }
+    }
 }
 
 int16_t& Tournament::GetStartupPointsByName(std::string name) {
@@ -141,6 +150,14 @@ void Tournament::AddStartupPoints(Startup s, int16_t points) {
     }
 }
 
+void Tournament::UpdateStartupStatus(Startup s, Status ss) {
+    for(auto& [startup, value, status, events] : startups) {
+        if(s.getName() == startup.getName()) {
+            status = ss;
+        }
+    }
+}
+
 void Tournament::UpdateStartupBattleEvent(Startup s, BattleEvent be) {
     for(auto& [startup, value, status, events] : startups) {
         if(s.getName() == startup.getName()) {
@@ -165,12 +182,24 @@ std::vector<Battle>& Tournament::GetBattles() {
     return battles;
 }
 
+void Tournament::UpdateBattles(Battle battle) {
+    battles[currentBattleIndex] = battle;
+}
+
 void Tournament::SetCurrentBattle(Battle b) {
     this->currentBattle = b;
 }
 
+void Tournament::SetCurrentBattleIndex(int i) {
+    this->currentBattleIndex = i;
+}
+
 Battle& Tournament::GetCurrentBattle() {
     return currentBattle;
+}
+
+int Tournament::GetCurrentBattleIndex(){
+    return currentBattleIndex;
 }
 
 int Tournament::MakeBattles() {

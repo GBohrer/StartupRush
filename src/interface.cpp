@@ -248,12 +248,12 @@ void PrintBattles(Tournament t) {
     std::stringstream stream;
     std::string text;
     int offset = 0;
-    const auto& battles = t.GetBattles();
+    auto& battles = t.GetBattles();
 
     for (size_t i=0; i < battles.size(); i++) {
-        const auto& startupA = battles[i].GetStartupA();
+        auto& startupA = battles[i].GetStartupA();
         std::string nameA = startupA.startup.getName();
-        const auto& startupB = battles[i].GetStartupB();
+        auto& startupB = battles[i].GetStartupB();
         std::string nameB = startupB.startup.getName();
 
         stream << "Batalha " << i+1 << ": " << nameA << "  Vs.  " << nameB;
