@@ -4,7 +4,9 @@ Este projeto é um software desenvolvido em **C++** utilizando a biblioteca **[r
 
 ## ⚙️ Como Executar
 
-Para executar o software, **basta clicar no arquivo executável `main`**, presente na raiz do projeto.
+Para executar o software, siga os passos:
+- Descompacte o arquivo.zip enviado com para a solução (GabrielAlveBohrer.zip)
+- Localize e **Clique no arquivo executável `main`**, presente na raiz do projeto.
 
 Não é necessário compilar nem instalar dependências para executar o software; mas, caso queira compilar o projeto a partir do código-fonte, é necessário ter o compilador C++ (como `g++=`) e a biblioteca `raylib` devidamente instalados em seu sistema. Para um ambiente de desenvolvimento mais satisfatório, recomendo usar o template de projetos incluso nos arquivos da Raylib para o VSCode (o mesmo usado para este projeto).
 
