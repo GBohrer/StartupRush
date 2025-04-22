@@ -3,6 +3,7 @@
 #include "raylib.h"
 
 #include <cstdlib>
+#include <algorithm>
 
 
 // STARTUP
@@ -219,35 +220,53 @@ int Tournament::MakeBattles() {
     int qtd = GetTotalStartupsDesqualified();
 
     // Caso especial de quando começa torneio com 6 startups!
+    //      REGRA: "desempate" com as 2 piores startups
     if (qtd == 3) {
-        std::cout << "CHEGUEI AQUI!!!" << std::endl;
-        //Verificar os pontos das startups.
-        //      REGRA: "desempate" com as 2 piores startups
-        //              A que ganhar fica para competir em TOURNAMENT_01
-        //              A que perder toma State::DESQUALIFIED
-    }
-
-    // Caso quando o torneio termina!
-    if (qtd == total-1) return 0;
-
-    while (HasStartupsAvaliable()) {
-        while (i < 2) {
-            int pos = rand() % total;
-            StartupEntry& s_aux = startups[pos];
-
-            if (s_aux.status == Status::AVALIABLE) {
-                s_aux.status = Status::QUALIFIED;
-                select_startups.emplace_back(s_aux);
-                i++;
-            }
+        
+        // Pega startups qualificadas
+        for (const auto& startup : startups) {
+            if (startup.status != Status::DESQUALIFIED)
+                select_startups.emplace_back(startup);
         }
+        // Ordena da pior para a melhor pontuação
+        std::sort(select_startups.begin(), select_startups.end(), []
+            (const StartupEntry& a, const StartupEntry& b) {
+                return a.totalPoints < b.totalPoints;
+            });
+
+        // Retira última startup
+        select_startups.pop_back();
+
         Battle b = Battle(select_startups[0], select_startups[1]);
         battles.emplace_back(b);
+        return -1;
 
-        select_startups.clear();
-        i = 0;
+    // Caso quando o torneio termina!
+    } else if (qtd == total-1) {
+        return 0;
+
+    // Caso geral. Algoritmo para geração aleatória de batalhas
+    } else {
+
+        while (HasStartupsAvaliable()) {
+            while (i < 2) {
+                int pos = rand() % total;
+                StartupEntry& s_aux = startups[pos];
+
+                if (s_aux.status == Status::AVALIABLE) {
+                    s_aux.status = Status::QUALIFIED;
+                    select_startups.emplace_back(s_aux);
+                    i++;
+                }
+            }
+            Battle b = Battle(select_startups[0], select_startups[1]);
+            battles.emplace_back(b);
+
+            select_startups.clear();
+            i = 0;
+        }
+        return battles.size();
     }
-    return battles.size();
 }
 
 void Tournament::ClearBattles() {

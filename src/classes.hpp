@@ -51,9 +51,9 @@ enum BattleStatus {
 };
 
 enum Status {
-    AVALIABLE,
-    DESQUALIFIED,
-    QUALIFIED
+    AVALIABLE = 0,
+    DESQUALIFIED = -1,
+    QUALIFIED = 1
 };
 
 typedef struct StartupEntry {

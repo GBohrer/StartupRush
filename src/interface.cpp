@@ -328,6 +328,17 @@ void PrintAllResults(Tournament t) {
     std::string text;
     int text_offset;
 
+}
 
+void PrintSpecialRoundInfo(Tournament t) {
+    std::string text;
+    int text_offset;
 
+    text = "O Sistema irá selecionar aleatoriamente";
+    text_offset = MeasureText(text.c_str(), TEXTBOX_FONTSIZE)/2;
+    DrawText(text.c_str(), SCREEN_POS_CENTER_4.x - text_offset, SCREEN_POS_CENTER_4.y, TEXTBOX_FONTSIZE, LIGHTGRAY);
+
+    text = "uma Startup para ganhar +1 ponto e seguir.";
+    text_offset = MeasureText(text.c_str(), TEXTBOX_FONTSIZE)/2;
+    DrawText(text.c_str(), SCREEN_POS_CENTER_5.x - text_offset, SCREEN_POS_CENTER_5.y, TEXTBOX_FONTSIZE, LIGHTGRAY);
 }

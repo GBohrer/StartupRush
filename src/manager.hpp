@@ -51,7 +51,7 @@ class Manager {
         void ResetBattle(bool shouldResetAll);
         void UpdateCurrentBattle(int battle_pos);
         void UpdateCurrentBattlePoints(BattleTextBox* btb);
-        void SelectWinner();
+        void SelectWinner(bool isSpecialCase);
         bool isAllBattlesCompleted();
         
     private:
@@ -76,6 +76,7 @@ void Handle_TOURNAMENT_08(Manager& manager);
 void Handle_TOURNAMENT_06(Manager& manager);
 void Handle_TOURNAMENT_04(Manager& manager);
 void Handle_TOURNAMENT_02(Manager& manager);
+void Handle_TOURNAMENT_SPECIAL(Manager& manager);
 void Handle_BATTLE(Manager& manager);
 void Handle_CHAMPION(Manager& manager);
 void Handle_RESULTS(Manager& manager);

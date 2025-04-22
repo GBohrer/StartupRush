@@ -9,8 +9,8 @@ std::unordered_map<STATE, DellState> StatesInit () {
     // ENTRY
     screenObjs = {
         std::make_shared<SimpleText>("STARTUP RUSH", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::BEGIN_TOURNAMENT, std::vector<std::string>{"Começar Torneio"}, SCREEN_POS_CENTER_3, false, true),
-        std::make_shared<TextBox>(BoxID::NEW_STARTUP, std::vector<std::string>{"Adicionar Startup"}, SCREEN_POS_CENTER_4, false, true),
+        std::make_shared<TextBox>(BoxID::NEW_STARTUP, std::vector<std::string>{"Adicionar Startup"}, SCREEN_POS_CENTER_3, false, true),
+        std::make_shared<TextBox>(BoxID::BEGIN_TOURNAMENT, std::vector<std::string>{"Começar Torneio"}, SCREEN_POS_CENTER_4, false, true),
         std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Sair"}, SCREEN_POS_CENTER_5, false, true)
 
     };
@@ -101,10 +101,20 @@ std::unordered_map<STATE, DellState> StatesInit () {
     states.emplace(STATE::BATTLE, DellState(STATE::BATTLE, screenObjs));
     screenObjs.clear();
 
+    // TOURNAMENT_SPECIAL
+    screenObjs = {
+        std::make_shared<SimpleText>("RODADA ESPECIAL", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Prosseguir"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
+        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true)
+
+    };
+    states.emplace(STATE::TOURNAMENT_SPECIAL, DellState(STATE::TOURNAMENT_SPECIAL, screenObjs));
+    screenObjs.clear();
+
     // CHAMPION
     screenObjs = {
         std::make_shared<SimpleText>("A STARTUP CAMPEÃ É...", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Ver Resultados"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
+        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Resultados"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
     
     };
     states.emplace(STATE::CHAMPION, DellState(STATE::CHAMPION, screenObjs));
@@ -140,6 +150,7 @@ std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
     {STATE::TOURNAMENT_06, Handle_TOURNAMENT_06},
     {STATE::TOURNAMENT_04, Handle_TOURNAMENT_04},
     {STATE::TOURNAMENT_02, Handle_TOURNAMENT_02},
+    {STATE::TOURNAMENT_SPECIAL, Handle_TOURNAMENT_SPECIAL},
     {STATE::BATTLE, Handle_BATTLE},
     {STATE::CHAMPION, Handle_CHAMPION},
     {STATE::RESULTS, Handle_RESULTS},
@@ -303,13 +314,14 @@ void Handle_BATTLE(Manager& manager) {
         switch(tb->GetID()) {
             case BoxID::CREATE:
                 manager.ResetBattle(false);
-                manager.SelectWinner();
+                manager.SelectWinner(false);
 
                 if (manager.isAllBattlesCompleted()){
                     int totalBattles = manager.GetRushGame().MakeBattles();
                     
                     if (totalBattles == 2) manager.SetCurrentState(STATE::TOURNAMENT_04);
                     if (totalBattles == 1) manager.SetCurrentState(STATE::TOURNAMENT_02);
+                    if (totalBattles == -1) manager.SetCurrentState(STATE::TOURNAMENT_SPECIAL);
                     if (totalBattles == 0) {
                         manager.SetRushGameChampion();
                         manager.SetCurrentState(STATE::CHAMPION);
@@ -331,6 +343,31 @@ void Handle_BATTLE(Manager& manager) {
         }
     });
     PrintCurrentBattleAndPoints(manager.GetRushGame());
+}
+
+void Handle_TOURNAMENT_SPECIAL(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::YES:
+                // Calcula automaticamente o desempate entre as 2 piores startups e segue
+                manager.UpdateCurrentBattle(1);
+                manager.SelectWinner(true);
+                manager.GetRushGame().MakeBattles();
+                manager.SetCurrentState(STATE::TOURNAMENT_02);
+
+                return;
+            case BoxID::BACK:
+                manager.ResetRushGame();
+                manager.SetCurrentState(STATE::ENTRY);
+                return;
+            default:
+                break;
+        }
+        manager.UpdateLastState();
+        return;
+    });
+    PrintBattles(manager.GetRushGame());
+    PrintSpecialRoundInfo(manager.GetRushGame());
 }
 
 void Handle_CHAMPION(Manager& manager) {

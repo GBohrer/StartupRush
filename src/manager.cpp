@@ -222,9 +222,6 @@ void Manager::ResetBattle(bool shouldResetAll) {
             btb->SetPressed(false);
         }
     }
-
-    // Atualiza a tela do torneio apenas quando os pontos são salvos!
-    //if (shouldResetAll) ResetTextBoxFromState(lastState);
 }
 
 void Manager::UpdateCurrentBattle(int battle_pos) {
@@ -248,7 +245,7 @@ void Manager::UpdateCurrentBattlePoints(BattleTextBox* btb) {
     rushGame.UpdateStartupBattleEvent(startup_entry.startup, be);
 }
 
-void Manager::SelectWinner() {
+void Manager::SelectWinner(bool isSpecialCase) {
     auto& currentBattle = rushGame.GetCurrentBattle();
     auto& startupA_entry = currentBattle.GetStartupA();
     auto& startupB_entry = currentBattle.GetStartupB();
@@ -268,7 +265,7 @@ void Manager::SelectWinner() {
             winner = startupB_entry;
             loser  = startupA_entry;
         }
-        rushGame.AddStartupPoints(winner.startup, 2);
+        if(!isSpecialCase) rushGame.AddStartupPoints(winner.startup, 2);
 
     } else if (pointsA > pointsB) {
         winner = startupA_entry;
@@ -278,7 +275,8 @@ void Manager::SelectWinner() {
         loser = startupA_entry;
     }
 
-    rushGame.AddStartupPoints(winner.startup, 30);
+    isSpecialCase ? rushGame.AddStartupPoints(winner.startup, 1)
+                  : rushGame.AddStartupPoints(winner.startup, 30);
     rushGame.UpdateStartupStatus(winner.startup, Status::AVALIABLE);
     rushGame.UpdateStartupStatus(loser.startup, Status::DESQUALIFIED);
 

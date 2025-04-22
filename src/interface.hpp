@@ -105,7 +105,7 @@ class PopUpMessage : public SimpleText {
         float timeLeft; 
         float duration;
 
-        PopUpMessage(const std::string& text, Vector2 position, float duration = 3.0f)
+        PopUpMessage(const std::string& text, Vector2 position, float duration = 5.0f)
         : SimpleText(text, TEXTBOX_FONTSIZE + 10, position, false, false), timeLeft(duration), duration(duration) {}
 
     void Update();
@@ -181,5 +181,6 @@ void PrintBattles(Tournament t);
 void PrintCurrentBattleAndPoints(Tournament t);
 void PrintChampionStartup(Tournament t);
 void PrintAllResults(Tournament t);
+void PrintSpecialRoundInfo(Tournament t);
 
 #endif
