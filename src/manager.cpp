@@ -279,7 +279,7 @@ void Manager::UpdateCurrentBattlePoints(BattleTextBox* btb) {
     auto& eventValue = btb->GetValue();
     int16_t updatedValue = (btb->isPressed() ? eventValue : -eventValue);
     rushGame.AddStartupPoints(startup_entry.startup, updatedValue);
-    rushGame.UpdateStartupBattleEvent(startup_entry.startup, be);
+    rushGame.UpdateStartupBattleEvent(startup_entry.startup, be, btb->isPressed());
 }
 
 void Manager::SelectWinner(bool isSpecialCase) {

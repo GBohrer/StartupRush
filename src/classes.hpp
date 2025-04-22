@@ -100,7 +100,7 @@ public:
     void AddStartupPoints(Startup s, int16_t points);
     void UpdateStartupStatus(Startup s, Status ss);
 
-    void UpdateStartupBattleEvent(Startup s, BattleEvent be);
+    void UpdateStartupBattleEvent(Startup s, BattleEvent be, bool pressed);
     void ClearStartupBattleEvents(Startup s);
     
     std::vector<BattleEvent>& GetBattleEvents();

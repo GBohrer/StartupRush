@@ -178,10 +178,14 @@ void Tournament::UpdateStartupStatus(Startup s, Status ss) {
     }
 }
 
-void Tournament::UpdateStartupBattleEvent(Startup s, BattleEvent be) {
+void Tournament::UpdateStartupBattleEvent(Startup s, BattleEvent be, bool pressed) {
     for(auto& [startup, value, status, events] : startups) {
         if(s.getName() == startup.getName()) {
-            events.emplace_back(be);
+            if (pressed) {
+                events.emplace_back(be);
+            } else {
+                events.pop_back();
+            }
         }
     }
 }
