@@ -123,7 +123,7 @@ std::unordered_map<STATE, DellState> StatesInit () {
     // RESULTS
     screenObjs = {
         std::make_shared<SimpleText>("RESULTADOS", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Voltar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
+        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Menu"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
         std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Sair"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
     
     };
@@ -374,6 +374,7 @@ void Handle_CHAMPION(Manager& manager) {
     Handle_UI(manager, [&manager](Box* tb) {
         switch(tb->GetID()) {
             case BoxID::YES:
+                manager.SortStartups();
                 manager.SetCurrentState(STATE::RESULTS);
             default:
                 break;

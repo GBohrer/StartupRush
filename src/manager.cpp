@@ -197,6 +197,15 @@ void Manager::CreateStartup() {
     rushGame.AddStartup(Startup(name, slogan, year));
 }
 
+void Manager::SortStartups() {
+    std::sort(rushGame.GetStartups().begin(), rushGame.GetStartups().end(), []
+    (const StartupEntry& a, const StartupEntry& b) {
+        if (a.totalPoints != b.totalPoints)
+            return a.totalPoints > b.totalPoints;
+        return a.startup.getYear() < b.startup.getYear();
+    });
+}
+
 void Manager::ResetBattle(bool shouldResetAll) {
 
     Battle& currentBattle = rushGame.GetCurrentBattle();

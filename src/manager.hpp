@@ -47,6 +47,7 @@ class Manager {
 
         void CreateStartup();
         void CreateStartupSamples(int total);
+        void SortStartups();
 
         void ResetBattle(bool shouldResetAll);
         void UpdateCurrentBattle(int battle_pos);

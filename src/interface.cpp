@@ -301,33 +301,39 @@ void PrintCurrentBattleAndPoints(Tournament t) {
 void PrintChampionStartup(Tournament t) {
     const auto& champion = t.GetChampion();
     std::stringstream stream;
-    std::string text;
-    int text_offset;
 
-    text = champion.startup.getName();
-    text_offset = MeasureText(text.c_str(), TITLE_FONTSIZE)/2;
-    DrawText(text.c_str(), SCREEN_POS_CENTER_4.x - text_offset, SCREEN_POS_CENTER_4.y, TITLE_FONTSIZE, COLOR_MOUSE_HOVER);
+    auto DrawCenteredText = [](const std::string& text, Vector2 pos, int fontSize, Color color) {
+        int offset = MeasureText(text.c_str(), fontSize) / 2;
+        DrawText(text.c_str(), pos.x - offset, pos.y, fontSize, color);
+    };
 
-    // Render da pontuação
-    text.clear(); stream.str("");
+    DrawCenteredText(champion.startup.getName(), SCREEN_POS_CENTER_4, TITLE_FONTSIZE, COLOR_MOUSE_HOVER);
+
     stream << "com " << champion.totalPoints << " pontos!";
-    text = stream.str();
-    text_offset = MeasureText(text.c_str(), TEXTBOX_FONTSIZE_2)/2;
-    DrawText(text.c_str(), SCREEN_POS_CENTER_5.x - text_offset, SCREEN_POS_CENTER_5.y, TEXTBOX_FONTSIZE_2, COLOR_MOUSE_HOVER);
+    DrawCenteredText(stream.str(), SCREEN_POS_CENTER_5, TEXTBOX_FONTSIZE_2, COLOR_MOUSE_HOVER);
 
-    // Render do slogan
-    text.clear(); stream.str("");
+    stream.str(""); stream.clear();
     stream << '"' << champion.startup.getSlogan() << '"';
-    text = stream.str();
-    text_offset = MeasureText(text.c_str(), TEXTBOX_FONTSIZE_2)/2;
-    DrawText(text.c_str(), SCREEN_POS_CENTER_7.x - text_offset, SCREEN_POS_CENTER_7.y, TEXTBOX_FONTSIZE_2, COLOR_MOUSE_HOVER);
+    DrawCenteredText(stream.str(), SCREEN_POS_CENTER_7, TEXTBOX_FONTSIZE_2, COLOR_MOUSE_HOVER);
 }
 
 void PrintAllResults(Tournament t) {
     std::stringstream stream;
-    std::string text;
-    int text_offset;
+    int height_offset = 0;
 
+    auto DrawCenteredText = [](const std::string& text, Vector2 pos, int height_offset, int fontSize, Color color) {
+
+        DrawText(text.c_str(), pos.x - 150, pos.y + height_offset, fontSize, color);
+    };
+
+    const auto& startups = t.GetStartups();
+    for (size_t i=0; i < startups.size(); i++) {
+        stream << i+1 << "º - " << startups[i].startup.getName() << " - " << startups[i].totalPoints << " pontos";
+        DrawCenteredText(stream.str(), SCREEN_POS_CENTER_3, height_offset, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+        
+        height_offset += 45;
+        stream.str("");
+    }
 }
 
 void PrintSpecialRoundInfo(Tournament t) {
