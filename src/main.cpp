@@ -4,16 +4,13 @@
 
 int main()
 {
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
-
-    InitWindow(screenWidth, screenHeight, "STARTUP RUSH");
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "STARTUP RUSH");
     SetTargetFPS(60);
 
     Manager& manager = Manager::GetManager();
     manager.Init();
 
-    manager.CreateStartupSamples(8);
+    manager.CreateStartupSamples(2);
 
     while (manager.isRunning()) {
 

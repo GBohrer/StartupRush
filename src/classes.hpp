@@ -91,7 +91,10 @@ public:
     std::vector<StartupEntry>& GetStartups();
     void UpdateStartups(StartupEntry s);
     int16_t& GetStartupPointsByName(std::string name);
+
     void PrintStartups();
+    void PrintAllEventsFromStartup();
+
     bool HasStartupsAvaliable();
     void ResetStartups();
     void AddStartupPoints(Startup s, int16_t points);
@@ -101,6 +104,7 @@ public:
     void ClearStartupBattleEvents(Startup s);
     
     std::vector<BattleEvent>& GetBattleEvents();
+    int GetEventCount(const StartupEntry& s, EventID id);
 
     std::vector<Battle>& GetBattles();
     void UpdateBattles(Battle battle);

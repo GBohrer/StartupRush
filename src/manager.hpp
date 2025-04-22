@@ -81,6 +81,7 @@ void Handle_TOURNAMENT_SPECIAL(Manager& manager);
 void Handle_BATTLE(Manager& manager);
 void Handle_CHAMPION(Manager& manager);
 void Handle_RESULTS(Manager& manager);
+void Handle_DETAILED_RESULTS(Manager& manager);
 void Handle_LEAVING(Manager& manager);
 
 extern std::map<STATE, std::function<void(Manager&)>> stateHandlers;

@@ -29,6 +29,7 @@ void Manager::Update() {
 
     if(IsKeyPressed(KEY_ESCAPE)) this->run = false;
     if(IsKeyPressed(KEY_P)) rushGame.PrintStartups();
+    if(IsKeyPressed(KEY_J)) rushGame.PrintAllEventsFromStartup();
 
     if (stateHandlers.find(this->currentState.state) != stateHandlers.end()) {
         stateHandlers[this->currentState.state](*this);

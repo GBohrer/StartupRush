@@ -135,6 +135,18 @@ void Tournament::PrintStartups() {
     std::cout << "=========================================" << std::endl;
 }
 
+void Tournament::PrintAllEventsFromStartup() {
+    std::cout << "=========================================" << std::endl;
+    for (const auto& [startup, value, status, events] : startups) {
+        std::cout << "Nome: " << startup.getName() << std::endl;
+        for (const auto& event : events) {
+            std::cout << event.getID() << " - ";
+        }
+        printf("\n");
+    }
+    std::cout << "=========================================" << std::endl;
+}
+
 bool Tournament::HasStartupsAvaliable() {
     for (const auto& startup : startups) {
         if (startup.status == Status::AVALIABLE) return true;
@@ -186,6 +198,14 @@ std::vector<BattleEvent>& Tournament::GetBattleEvents() {
     return events;
 }
 
+int Tournament::GetEventCount(const StartupEntry& s, EventID id) {
+    int total = 0;
+    for(const auto& event : s.events) {
+        if(event.getID() == id) total++;
+    }
+    return total;
+}
+
 std::vector<Battle>& Tournament::GetBattles() {
     return battles;
 }
@@ -221,7 +241,7 @@ int Tournament::MakeBattles() {
 
     // Caso especial de quando começa torneio com 6 startups!
     //      REGRA: "desempate" com as 2 piores startups
-    if (qtd == 3) {
+    if (qtd == 3 && total == 6) {
         
         // Pega startups qualificadas
         for (const auto& startup : startups) {

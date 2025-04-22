@@ -160,7 +160,7 @@ PromptBox::PromptBox(Vector2 pos, bool b, bool c) {
     this->isClickable = c;
     this->pos = {pos.x - width / 2, pos.y};
     this->currentText = "";
-    this->maxCharacters = 20;
+    this->maxCharacters = 32;
 }
 
 void PromptBox::SetIsCursorOn(bool b) {
@@ -204,27 +204,28 @@ void PrintStartupsCount(int total) {
 
 void PrintEventDescription(EventID id) {
     const char* text;
+    int fontSize = TEXTBOX_FONTSIZE;
 
     switch(id) {
         case EventID::GoodPitch:
             text = "Fez um pitch convincente (+6)";
-            DrawText(text,SCREEN_POS_CENTER_3.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_3.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            DrawText(text,SCREEN_POS_CENTER_3.x - MeasureText(text, fontSize) / 2, SCREEN_POS_CENTER_3.y +5, fontSize, LIGHTGRAY);
             return;
         case EventID::WithBugs:
             text = "Produto com bugs (-4)";
-            DrawText(text,SCREEN_POS_CENTER_4.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_4.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            DrawText(text,SCREEN_POS_CENTER_4.x - MeasureText(text, fontSize) / 2, SCREEN_POS_CENTER_4.y +5, fontSize, LIGHTGRAY);
             return;
         case EventID::UserDriven:
             text = "Boa tração de usuários (+3)";
-            DrawText(text,SCREEN_POS_CENTER_5.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_5.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            DrawText(text,SCREEN_POS_CENTER_5.x - MeasureText(text, fontSize) / 2, SCREEN_POS_CENTER_5.y +5, fontSize, LIGHTGRAY);
             return;
         case EventID::AngryInvestor:
             text = "Investidor irritado (-6)";
-            DrawText(text,SCREEN_POS_CENTER_6.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_6.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            DrawText(text,SCREEN_POS_CENTER_6.x - MeasureText(text, fontSize) / 2, SCREEN_POS_CENTER_6.y +5, fontSize, LIGHTGRAY);
             return;
         case EventID::FakeNews:
             text = "Fake news durante o pitch (-8)";
-            DrawText(text,SCREEN_POS_CENTER_7.x - MeasureText(text, TEXTBOX_FONTSIZE_2) / 2, SCREEN_POS_CENTER_7.y +5, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+            DrawText(text,SCREEN_POS_CENTER_7.x - MeasureText(text, fontSize) / 2, SCREEN_POS_CENTER_7.y +5, fontSize, LIGHTGRAY);
             return;
         default:
             break;
@@ -273,7 +274,7 @@ void PrintBattles(Tournament t) {
         DrawText(text.c_str(), SCREEN_POS_CENTER_2.x - 300, SCREEN_POS_CENTER_2.y + offset, TEXTBOX_FONTSIZE+10, LIGHTGRAY);
     
         text.clear(); stream.str("");
-        offset += 70;
+        offset += 100;
     }
 }
 
@@ -320,18 +321,18 @@ void PrintChampionStartup(Tournament t) {
 void PrintAllResults(Tournament t) {
     std::stringstream stream;
     int height_offset = 0;
+    int fontSize = TEXTBOX_FONTSIZE_2;
 
     auto DrawCenteredText = [](const std::string& text, Vector2 pos, int height_offset, int fontSize, Color color) {
-
-        DrawText(text.c_str(), pos.x - 150, pos.y + height_offset, fontSize, color);
+        DrawText(text.c_str(), pos.x - 400, pos.y + height_offset, fontSize, color);
     };
 
     const auto& startups = t.GetStartups();
     for (size_t i=0; i < startups.size(); i++) {
         stream << i+1 << "º - " << startups[i].startup.getName() << " - " << startups[i].totalPoints << " pontos";
-        DrawCenteredText(stream.str(), SCREEN_POS_CENTER_3, height_offset, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+        DrawCenteredText(stream.str(), SCREEN_POS_CENTER_2, height_offset, fontSize, LIGHTGRAY);
         
-        height_offset += 45;
+        height_offset += fontSize + 5;
         stream.str("");
     }
 }
@@ -347,4 +348,52 @@ void PrintSpecialRoundInfo(Tournament t) {
     text = "uma Startup para ganhar +1 ponto e seguir.";
     text_offset = MeasureText(text.c_str(), TEXTBOX_FONTSIZE)/2;
     DrawText(text.c_str(), SCREEN_POS_CENTER_5.x - text_offset, SCREEN_POS_CENTER_5.y, TEXTBOX_FONTSIZE, LIGHTGRAY);
+}
+
+void PrintAllResultsWithEvents(Tournament t) {
+    std::stringstream stream;
+    int fontSize = TEXTBOX_FONTSIZE;
+
+    auto DrawTextCentered = [](const std::string& text, Vector2 pos, int fontSize, Color color) {
+        int textWidth = MeasureText(text.c_str(), fontSize);
+        DrawText(text.c_str(), pos.x - textWidth / 2, pos.y, fontSize, color);
+    };
+
+    const auto& startups = t.GetStartups();
+    size_t numStartups = startups.size();
+
+    const float topRowY = SCREEN_POS_CENTER_2.y;
+    const float bottomRowY = SCREEN_POS_CENTER_5.y;
+    const float spacing = SCREEN_WIDTH / (std::min(numStartups, size_t(4)) + 1);
+
+    for (size_t i = 0; i < numStartups; i++) {
+        bool isTopRow = (i < 4);
+        float posY = isTopRow ? topRowY : bottomRowY;
+
+        // Define posição horizontal com base na linha
+        size_t indexInRow = isTopRow ? i : i - 4;
+        float posX = spacing * (indexInRow + 1);
+
+        // Nome da startup
+        stream << i + 1 << "º - " << startups[i].startup.getName();
+        DrawTextCentered(stream.str(), { posX, posY }, fontSize, LIGHTGRAY);
+        stream.str("");
+
+        std::vector<std::pair<EventID, std::string>> eventList = {
+            { EventID::GoodPitch, "GoodPitch" },
+            { EventID::WithBugs, "WithBugs" },
+            { EventID::UserDriven, "UserDriven" },
+            { EventID::AngryInvestor, "AngryInvestor" },
+            { EventID::FakeNews, "FakeNews" }
+        };
+
+        for (size_t j = 0; j < eventList.size(); j++) {
+            int count = t.GetEventCount(startups[i], eventList[j].first);
+            stream << eventList[j].second << ": " << std::to_string(count);
+
+            float eventY = posY + 40 + j * 30;
+            DrawTextCentered(stream.str(), { posX, eventY }, fontSize, LIGHTGRAY);
+            stream.str("");
+        }
+    }
 }

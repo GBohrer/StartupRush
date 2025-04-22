@@ -124,17 +124,27 @@ std::unordered_map<STATE, DellState> StatesInit () {
     screenObjs = {
         std::make_shared<SimpleText>("RESULTADOS", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Menu"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
+        std::make_shared<TextBox>(BoxID::CONTENT, std::vector<std::string>{"Detalhes"}, SCREEN_POS_CENTER_BOTTOM, false, true),
         std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Sair"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
     
     };
     states.emplace(STATE::RESULTS, DellState(STATE::RESULTS, screenObjs));
-    screenObjs.clear(); 
+    screenObjs.clear();
+
+    // DETAILED_RESULTS
+    screenObjs = {
+        std::make_shared<SimpleText>("RESULTADOS", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Voltar"}, SCREEN_POS_CENTER_BOTTOM, false, true),
+    
+    };
+    states.emplace(STATE::DETAILED_RESULTS, DellState(STATE::DETAILED_RESULTS, screenObjs));
+    screenObjs.clear();
 
     // LEAVING
     screenObjs = {
-        std::make_shared<SimpleText>("SAIR DO SISTEMA?", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Sim"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
-        std::make_shared<TextBox>(BoxID::NO, std::vector<std::string>{"Não"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true)
+        std::make_shared<SimpleText>("SAIR DO SISTEMA?", TITLE_FONTSIZE, SCREEN_POS_CENTER_2, false, false),
+        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Sim"}, SCREEN_POS_CENTER_LEFT_4, false, true),
+        std::make_shared<TextBox>(BoxID::NO, std::vector<std::string>{"Não"}, SCREEN_POS_CENTER_RIGHT_4, false, true)
     };
     states.emplace(STATE::LEAVING, DellState(STATE::LEAVING, screenObjs));
     screenObjs.clear(); 
@@ -154,6 +164,7 @@ std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
     {STATE::BATTLE, Handle_BATTLE},
     {STATE::CHAMPION, Handle_CHAMPION},
     {STATE::RESULTS, Handle_RESULTS},
+    {STATE::DETAILED_RESULTS, Handle_DETAILED_RESULTS},
     {STATE::LEAVING, Handle_LEAVING},
 };
 
@@ -390,14 +401,32 @@ void Handle_RESULTS(Manager& manager) {
                 manager.ResetRushGame();
                 manager.SetCurrentState(STATE::ENTRY);
                 return;
+            case BoxID::CONTENT:
+                manager.SetCurrentState(STATE::DETAILED_RESULTS);
+                return;
             case BoxID::EXIT:
                 manager.UpdateLastState();
                 manager.SetCurrentState(STATE::LEAVING);
+                return;
             default:
                 break;
         }
     });
+    manager.UpdateLastState();
     PrintAllResults(manager.GetRushGame());
+}
+
+void Handle_DETAILED_RESULTS(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::BACK:
+                manager.SetCurrentState(STATE::RESULTS);
+                return;
+            default:
+                break;
+        }
+    });
+    PrintAllResultsWithEvents(manager.GetRushGame());
 }
 
 void Handle_LEAVING(Manager& manager) {

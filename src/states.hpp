@@ -17,6 +17,7 @@ enum STATE {
     BATTLE,
     CHAMPION,
     RESULTS,
+    DETAILED_RESULTS,
     LEAVING
 };
 
