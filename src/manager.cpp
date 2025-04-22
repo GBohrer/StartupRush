@@ -135,10 +135,37 @@ bool Manager::HasMessages() {
 
 bool Manager::isPromptsOk() {
 
-    //vector auxiliar com os nomes de startups ja adicionados
+    // Vetor auxiliar com os nomes de startups ja adicionados
     std::vector<std::string> startupNames;
     for(const auto& [startup, value, status, events] : rushGame.GetStartups()){
         startupNames.emplace_back(startup.getName());
+    }
+
+    // Captura o nome do prompt
+    PromptBox* pb_name = dynamic_cast<PromptBox*>(GetUIObjects()[2].get());
+    if (pb_name) {
+        if (std::find(startupNames.begin(), startupNames.end(), pb_name->GetCurrentText()) != startupNames.end()) {
+            CreateMessage(PopUpMessage("Nome já registrado!", SCREEN_POS_CENTER_BOTTOM));
+            return false;
+        }
+    }
+
+    // Captura o ano do prompt 
+    PromptBox* pb_year = dynamic_cast<PromptBox*>(GetUIObjects()[6].get());
+    if (pb_year) {
+        try {
+            int year = std::stoi(pb_year->GetCurrentText());
+            if (year < 0 || year > 2025) {
+                CreateMessage(PopUpMessage("Insira um ano válido!", SCREEN_POS_CENTER_BOTTOM));
+                return false;
+            }
+        } catch (const std::invalid_argument&) {
+            CreateMessage(PopUpMessage("Ano inválido! Insira um número.", SCREEN_POS_CENTER_BOTTOM));
+            return false;
+        } catch (const std::out_of_range&) {
+            CreateMessage(PopUpMessage("Ano fora do intervalo! Insira um ano válido.", SCREEN_POS_CENTER_BOTTOM));
+            return false;
+        }
     }
 
     for (const auto& obj : GetUIObjects()) {
@@ -147,10 +174,6 @@ bool Manager::isPromptsOk() {
         if (pb){
             if(pb->GetCurrentText().empty()) {
                 CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_BOTTOM));
-                return false;
-
-            } else if (std::find(startupNames.begin(), startupNames.end(), pb->GetCurrentText()) != startupNames.end()) {
-                CreateMessage(PopUpMessage("Nome já registrado!", SCREEN_POS_CENTER_BOTTOM));
                 return false;
             }
         }

@@ -19,7 +19,7 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // CREATE_STARTUP
     screenObjs = {
-        std::make_shared<SimpleText>("INSIRA OS DADOS DA STARTUP", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<SimpleText>("INSIRA OS DADOS DA STARTUP", TEXTBOX_FONTSIZE_2, SCREEN_POS_CENTER_2, false, false),
         std::make_shared<SimpleText>("Nome:", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_LEFT_3, false, false),
         std::make_shared<PromptBox>(SCREEN_POS_CENTER_3, true, true),
         std::make_shared<SimpleText>("Slogan:", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_LEFT_4, false, false),
