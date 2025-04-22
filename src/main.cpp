@@ -1,3 +1,5 @@
+// STARTUP RUSH - V1.0
+
 #include <raylib.h>
 
 #include "manager.hpp"
@@ -9,7 +11,7 @@ int main()
 
     Manager& manager = Manager::GetManager();
     manager.Init();
-    
+
     while (manager.isRunning()) {
 
         manager.Update();
