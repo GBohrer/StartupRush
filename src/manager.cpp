@@ -148,6 +148,9 @@ bool Manager::isPromptsOk() {
         if (std::find(startupNames.begin(), startupNames.end(), pb_name->GetCurrentText()) != startupNames.end()) {
             CreateMessage(PopUpMessage("Nome já registrado!", SCREEN_POS_CENTER_6));
             return false;
+        } else if (pb_name->GetCurrentText().size() > 16) {
+            CreateMessage(PopUpMessage("Nome muito longo!", SCREEN_POS_CENTER_6));
+            return false;
         }
     }
 
@@ -194,13 +197,13 @@ bool Manager::isTournamentReady() {
     int total = rushGame.GetTotalStartups();
 
     if (total < 4) {
-        CreateMessage(PopUpMessage("Adicione no mínimo 4 Startups!", SCREEN_POS_CENTER_6));
+        CreateMessage(PopUpMessage("Adicione no mínimo 4 Startups!", SCREEN_POS_CENTER_BOTTOM));
         return false;
     } else if (!(total % 2 == 0)) {
-        CreateMessage(PopUpMessage("Adicione mais 1 Startup!", SCREEN_POS_CENTER_6));
+        CreateMessage(PopUpMessage("Adicione mais 1 Startup!", SCREEN_POS_CENTER_BOTTOM));
         return false;
     } else if (total > 8) {
-        CreateMessage(PopUpMessage("Máximo de Startups atingido!", SCREEN_POS_CENTER_6));
+        CreateMessage(PopUpMessage("Máximo de Startups atingido!", SCREEN_POS_CENTER_BOTTOM));
         return false; 
     } else { return true; }
 }

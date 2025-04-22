@@ -153,7 +153,7 @@ void BattleTextBox::Draw() {
 
 PromptBox::PromptBox(Vector2 pos, bool b, bool c) {
     this->id = BoxID::PROMPT;
-    this->width = TEXTBOX_WIDTH * 2.3;
+    this->width = TEXTBOX_WIDTH * 2.4;
     this->height = TEXTBOX_HEIGHT;
     this->isCursorOn = false;
     this->isBlinkable = b;
@@ -271,7 +271,7 @@ void PrintBattles(Tournament t) {
         }
 
         text = stream.str();
-        DrawText(text.c_str(), SCREEN_POS_CENTER_2.x - 300, SCREEN_POS_CENTER_2.y + offset, TEXTBOX_FONTSIZE+10, LIGHTGRAY);
+        DrawText(text.c_str(), SCREEN_POS_CENTER_3.x - 450, SCREEN_POS_CENTER_3.y + offset, TEXTBOX_FONTSIZE+10, LIGHTGRAY);
     
         text.clear(); stream.str("");
         offset += 100;
@@ -283,20 +283,19 @@ void PrintCurrentBattleAndPoints(Tournament t) {
     Battle& battle = t.GetCurrentBattle();
 
     const auto& startupA = battle.GetStartupA();
-    const char* nameA = startupA.startup.getName().c_str();
-    
-    const char* pointsA = std::to_string(t.GetStartupPointsByName(nameA)).c_str();
+    const auto& nameA = startupA.startup.getName();
+    const auto& pointsA = std::to_string(t.GetStartupPointsByName(nameA));
 
     // Renderizar os pontos de CADA BattleEvent ao lado (esquerdo ou direito) de suas respectivas TextBox
-    DrawText(nameA,SCREEN_POS_CENTER_LEFT_1.x - MeasureText(nameA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
-    DrawText(pointsA,SCREEN_POS_CENTER_LEFT_2.x - MeasureText(pointsA, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    DrawText(nameA.c_str(),SCREEN_POS_CENTER_LEFT_1.x - MeasureText(nameA.c_str(), TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    DrawText(pointsA.c_str(),SCREEN_POS_CENTER_LEFT_2.x - MeasureText(pointsA.c_str(), TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_LEFT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
     
     const auto& startupB = battle.GetStartupB();
-    const char* nameB = startupB.startup.getName().c_str();
-    const char* pointsB = std::to_string(t.GetStartupPointsByName(nameB)).c_str();
+    const auto& nameB = startupB.startup.getName();
+    const auto& pointsB = std::to_string(t.GetStartupPointsByName(nameB));
 
-    DrawText(nameB,SCREEN_POS_CENTER_RIGHT_1.x - MeasureText(nameB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
-    DrawText(pointsB,SCREEN_POS_CENTER_RIGHT_2.x - MeasureText(pointsB, TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    DrawText(nameB.c_str(),SCREEN_POS_CENTER_RIGHT_1.x - MeasureText(nameB.c_str(), TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_1.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
+    DrawText(pointsB.c_str(),SCREEN_POS_CENTER_RIGHT_2.x - MeasureText(pointsB.c_str(), TEXTBOX_FONTSIZE_2)/2, SCREEN_POS_CENTER_RIGHT_2.y, TEXTBOX_FONTSIZE_2, LIGHTGRAY);
 }
 
 void PrintChampionStartup(Tournament t) {

@@ -8,10 +8,10 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // ENTRY
     screenObjs = {
-        std::make_shared<SimpleText>("STARTUP RUSH", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::NEW_STARTUP, std::vector<std::string>{"Adicionar Startup"}, SCREEN_POS_CENTER_3, false, true),
-        std::make_shared<TextBox>(BoxID::BEGIN_TOURNAMENT, std::vector<std::string>{"Começar Torneio"}, SCREEN_POS_CENTER_4, false, true),
-        std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Sair"}, SCREEN_POS_CENTER_5, false, true)
+        std::make_shared<SimpleText>("STARTUP RUSH", TITLE_FONTSIZE, SCREEN_POS_CENTER_2, false, false),
+        std::make_shared<TextBox>(BoxID::NEW_STARTUP, std::vector<std::string>{"Adicionar Startup"}, SCREEN_POS_CENTER_4, false, true),
+        std::make_shared<TextBox>(BoxID::BEGIN_TOURNAMENT, std::vector<std::string>{"Começar Torneio"}, SCREEN_POS_CENTER_5, false, true),
+        std::make_shared<TextBox>(BoxID::EXIT, std::vector<std::string>{"Sair"}, SCREEN_POS_CENTER_6, false, true)
 
     };
     states.emplace(STATE::ENTRY, DellState(STATE::ENTRY, screenObjs));
@@ -47,11 +47,11 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // TOURNAMENT_08
     screenObjs = {
-        std::make_shared<SimpleText>("TORNEIO", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_2, false, true),
-        std::make_shared<TextBox>(BoxID::VALIDATE2, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
-        std::make_shared<TextBox>(BoxID::VALIDATE3, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_4, false, true),
-        std::make_shared<TextBox>(BoxID::VALIDATE4, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_5, false, true),
+        std::make_shared<SimpleText>("TORNEIO", TITLE_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
+        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
+        std::make_shared<TextBox>(BoxID::VALIDATE2, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_4, false, true),
+        std::make_shared<TextBox>(BoxID::VALIDATE3, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_5, false, true),
+        std::make_shared<TextBox>(BoxID::VALIDATE4, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_6, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true)
 
     };
@@ -60,10 +60,10 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // TOURNAMENT_06
     screenObjs = {
-        std::make_shared<SimpleText>("TORNEIO", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_2, false, true),
-        std::make_shared<TextBox>(BoxID::VALIDATE2, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
-        std::make_shared<TextBox>(BoxID::VALIDATE3, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_4, false, true),
+        std::make_shared<SimpleText>("TORNEIO", TITLE_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
+        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
+        std::make_shared<TextBox>(BoxID::VALIDATE2, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_4, false, true),
+        std::make_shared<TextBox>(BoxID::VALIDATE3, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_5, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true)
 
     };
@@ -72,9 +72,9 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // TOURNAMENT_04
     screenObjs = {
-        std::make_shared<SimpleText>("TORNEIO", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_2, false, true),
-        std::make_shared<TextBox>(BoxID::VALIDATE2, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
+        std::make_shared<SimpleText>("TORNEIO", TITLE_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
+        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
+        std::make_shared<TextBox>(BoxID::VALIDATE2, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_4, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true)
 
     };
@@ -83,8 +83,8 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // TOURNAMENT_02
     screenObjs = {
-        std::make_shared<SimpleText>("TORNEIO", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
-        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_2, false, true),
+        std::make_shared<SimpleText>("TORNEIO", TITLE_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
+        std::make_shared<TextBox>(BoxID::VALIDATE1, std::vector<std::string>{"Avaliar", "Concluído"}, SCREEN_POS_CENTER_LEFT_3, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true)
 
     };
@@ -115,7 +115,7 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // TOURNAMENT_SPECIAL
     screenObjs = {
-        std::make_shared<SimpleText>("RODADA ESPECIAL", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<SimpleText>("RODADA ESPECIAL",  TITLE_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
         std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Prosseguir"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true)
 
@@ -125,7 +125,7 @@ std::unordered_map<STATE, DellState> StatesInit () {
 
     // CHAMPION
     screenObjs = {
-        std::make_shared<SimpleText>("A STARTUP CAMPEÃ É...", TITLE_FONTSIZE, SCREEN_POS_CENTER_TOP, false, false),
+        std::make_shared<SimpleText>("A STARTUP CAMPEÃ É...", TITLE_FONTSIZE, SCREEN_POS_CENTER_1, false, false),
         std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Resultados"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
     
     };
