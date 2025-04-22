@@ -46,7 +46,8 @@ class Manager {
         void ClearPromtps();
 
         void CreateStartup();
-        void CreateStartupSamples(int total);
+        std::vector<Startup> CreateSamples();
+        bool AddStartupSamples(int total);
         void SortStartups();
 
         void ResetBattle(bool shouldResetAll);
@@ -63,6 +64,7 @@ class Manager {
         bool run;
 
         Tournament rushGame;
+        std::vector<Startup> samples;
 };
 
 // Interface
@@ -73,6 +75,7 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback);
 
 void Handle_ENTRY(Manager& manager);
 void Handle_CREATE_STARTUP(Manager& manager);
+void Handle_SELECT_SAMPLES(Manager& manager);
 void Handle_TOURNAMENT_08(Manager& manager);
 void Handle_TOURNAMENT_06(Manager& manager);
 void Handle_TOURNAMENT_04(Manager& manager);

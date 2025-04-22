@@ -27,10 +27,22 @@ std::unordered_map<STATE, DellState> StatesInit () {
         std::make_shared<SimpleText>("Ano:", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_LEFT_5, false, false),
         std::make_shared<PromptBox>(SCREEN_POS_CENTER_5, true, true),
         std::make_shared<TextBox>(BoxID::CREATE, std::vector<std::string>{"Adicionar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true),
+        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Exemplos"}, SCREEN_POS_CENTER_BOTTOM, false, true),
         std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Voltar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true)
 
     };
     states.emplace(STATE::CREATE_STARTUP, DellState(STATE::CREATE_STARTUP, screenObjs));
+    screenObjs.clear();
+
+    // SELECT_SAMPLES
+    screenObjs = {
+        std::make_shared<SimpleText>("SELECIONE QUANTOS EXEMPLOS DESEJA CRIAR", TEXTBOX_FONTSIZE, SCREEN_POS_CENTER_2, false, false),
+        std::make_shared<TextBox>(BoxID::SELECTOR, std::vector<std::string>{"1", "2", "3", "4", "5", "6", "7", "8"}, SCREEN_POS_CENTER_3, false, true),
+        std::make_shared<TextBox>(BoxID::BACK, std::vector<std::string>{"Cancelar"}, SCREEN_POS_CENTER_BOTTOM_LEFT, false, true),
+        std::make_shared<TextBox>(BoxID::YES, std::vector<std::string>{"Criar"}, SCREEN_POS_CENTER_BOTTOM_RIGHT, false, true)
+
+    };
+    states.emplace(STATE::SELECT_SAMPLES, DellState(STATE::SELECT_SAMPLES, screenObjs));
     screenObjs.clear();
 
     // TOURNAMENT_08
@@ -156,6 +168,7 @@ std::unordered_map<STATE, DellState> StatesInit () {
 std::map<STATE, std::function<void(Manager&)>> stateHandlers = {
     {STATE::ENTRY, Handle_ENTRY},
     {STATE::CREATE_STARTUP, Handle_CREATE_STARTUP},
+    {STATE::SELECT_SAMPLES, Handle_SELECT_SAMPLES},
     {STATE::TOURNAMENT_08, Handle_TOURNAMENT_08},
     {STATE::TOURNAMENT_06, Handle_TOURNAMENT_06},
     {STATE::TOURNAMENT_04, Handle_TOURNAMENT_04},
@@ -212,10 +225,37 @@ void Handle_CREATE_STARTUP(Manager& manager) {
                 }
                 return;
 
+            case BoxID::YES:
+                manager.SetCurrentState(STATE::SELECT_SAMPLES);
+                return;
+
             case BoxID::BACK:
                 manager.ClearPromtps();
                 manager.SetCurrentState(STATE::ENTRY);
                 return;
+            default:
+                break;
+        }
+    });
+}
+
+void Handle_SELECT_SAMPLES(Manager& manager) {
+    Handle_UI(manager, [&manager](Box* tb) {
+        switch(tb->GetID()) {
+            case BoxID::YES: {
+                // Pega a quantidade de samples escolhida pelo usuário
+                    const auto obj = manager.GetUIObjects()[1].get();
+                    TextBox* selector = dynamic_cast<TextBox*>(obj);
+                    bool ok = manager.AddStartupSamples(std::atoi(selector->GetText().c_str()));
+                    if (ok) manager.SetCurrentState(STATE::ENTRY);
+
+                return;
+            }
+            case BoxID::BACK:
+                manager.ClearPromtps();
+                manager.SetCurrentState(STATE::CREATE_STARTUP);
+                return;
+
             default:
                 break;
         }

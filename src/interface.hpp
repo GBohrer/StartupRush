@@ -59,12 +59,13 @@ const Vector2 SCREEN_POS_LEFT_BOTTOM         = {(float)SCREEN_WIDTH / 2 - SCREEN
 
 enum BoxID {
     BEGIN_TOURNAMENT,
-    VALIDATE1,
+    VALIDATE1,              // NÃO MUDAR INDEX DOS VALIDATE!!!
     VALIDATE2,
     VALIDATE3,
     VALIDATE4,
     NEW_STARTUP,
     CREATE,
+    SELECTOR,
     EXIT,
     BACK,
     YES,

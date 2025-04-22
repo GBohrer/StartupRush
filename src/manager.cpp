@@ -22,6 +22,7 @@ void Manager::Init() {
     this->states = StatesInit();
     this->currentState = states.at(STATE::ENTRY);
     this->lastState = states.at(STATE::ENTRY);
+    this->samples = CreateSamples();
     this->rushGame.Init();
 }
 
@@ -145,7 +146,7 @@ bool Manager::isPromptsOk() {
     PromptBox* pb_name = dynamic_cast<PromptBox*>(GetUIObjects()[2].get());
     if (pb_name) {
         if (std::find(startupNames.begin(), startupNames.end(), pb_name->GetCurrentText()) != startupNames.end()) {
-            CreateMessage(PopUpMessage("Nome já registrado!", SCREEN_POS_CENTER_BOTTOM));
+            CreateMessage(PopUpMessage("Nome já registrado!", SCREEN_POS_CENTER_6));
             return false;
         }
     }
@@ -156,14 +157,14 @@ bool Manager::isPromptsOk() {
         try {
             int year = std::stoi(pb_year->GetCurrentText());
             if (year < 0 || year > 2025) {
-                CreateMessage(PopUpMessage("Insira um ano válido!", SCREEN_POS_CENTER_BOTTOM));
+                CreateMessage(PopUpMessage("Insira um ano válido!", SCREEN_POS_CENTER_6));
                 return false;
             }
         } catch (const std::invalid_argument&) {
-            CreateMessage(PopUpMessage("Ano inválido! Insira um número.", SCREEN_POS_CENTER_BOTTOM));
+            CreateMessage(PopUpMessage("Ano inválido! Insira um número.", SCREEN_POS_CENTER_6));
             return false;
         } catch (const std::out_of_range&) {
-            CreateMessage(PopUpMessage("Ano fora do intervalo! Insira um ano válido.", SCREEN_POS_CENTER_BOTTOM));
+            CreateMessage(PopUpMessage("Ano fora do intervalo! Insira um ano válido.", SCREEN_POS_CENTER_6));
             return false;
         }
     }
@@ -173,7 +174,7 @@ bool Manager::isPromptsOk() {
 
         if (pb){
             if(pb->GetCurrentText().empty()) {
-                CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_BOTTOM));
+                CreateMessage(PopUpMessage("Preencha todos os campos!", SCREEN_POS_CENTER_6));
                 return false;
             }
         }
@@ -193,13 +194,13 @@ bool Manager::isTournamentReady() {
     int total = rushGame.GetTotalStartups();
 
     if (total < 4) {
-        CreateMessage(PopUpMessage("Adicione no mínimo 4 Startups!", SCREEN_POS_CENTER_BOTTOM));
+        CreateMessage(PopUpMessage("Adicione no mínimo 4 Startups!", SCREEN_POS_CENTER_6));
         return false;
     } else if (!(total % 2 == 0)) {
-        CreateMessage(PopUpMessage("Adicione mais 1 Startup!", SCREEN_POS_CENTER_BOTTOM));
+        CreateMessage(PopUpMessage("Adicione mais 1 Startup!", SCREEN_POS_CENTER_6));
         return false;
     } else if (total > 8) {
-        CreateMessage(PopUpMessage("Máximo de Startups atingido!", SCREEN_POS_CENTER_BOTTOM));
+        CreateMessage(PopUpMessage("Máximo de Startups atingido!", SCREEN_POS_CENTER_6));
         return false; 
     } else { return true; }
 }
@@ -361,6 +362,9 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
 
                     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
                         tb->SetPressed(true);
+                        if(tb->GetID() == BoxID::SELECTOR) 
+                            tb->SetNextText();
+
                         callback(tb);
                         return;
                     }
@@ -391,10 +395,30 @@ void Handle_UI(Manager& manager, std::function<void(Box*)> callback) {
 }
 
 
-// Debug Methods
+// Feature Extra
 
-void Manager::CreateStartupSamples(int total) {
+bool Manager::AddStartupSamples(int total) {
+
+    if (total + rushGame.GetTotalStartups() > 8) {
+        std::stringstream text;
+        text << "Limite de Startups ultrapassado. Adicione até " << 8 - rushGame.GetTotalStartups() << " startups";
+        CreateMessage(PopUpMessage(text.str().c_str(), SCREEN_POS_CENTER_6));
+        return false;
+    }
+    
+    total = std::min(total, static_cast<int>(samples.size()));
+
+    for (int i=0 ; i < total; i++) {
+        int randomIndex = rand() % samples.size();
+        rushGame.AddStartup(samples[randomIndex]);
+        samples.erase(samples.begin()+randomIndex);
+    }
+    return true;
+}
+
+std::vector<Startup> Manager::CreateSamples() {
     std::vector<Startup> samples;
+
     samples.emplace_back(Startup("Microsoft", "Be what is next.", 1975));
     samples.emplace_back(Startup("Google", "Do not be evil.", 1998));
     samples.emplace_back(Startup("Nintendo", "There is no play like it.", 1889));
@@ -413,12 +437,6 @@ void Manager::CreateStartupSamples(int total) {
     samples.emplace_back(Startup("Airbnb", "Belong anywhere.", 2008));
     samples.emplace_back(Startup("Discord", "Your place to talk.", 2015));
     samples.emplace_back(Startup("Sony", "Make. Believe.", 1946));
-    
-    total = std::min(total, static_cast<int>(samples.size()));
 
-    for (int i=0 ; i < total; i++) {
-        int randomIndex = rand() % samples.size();
-        rushGame.AddStartup(samples[randomIndex]);
-        samples.erase(samples.begin()+randomIndex);
-    }
+    return samples;
 }

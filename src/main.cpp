@@ -9,9 +9,7 @@ int main()
 
     Manager& manager = Manager::GetManager();
     manager.Init();
-
-    manager.CreateStartupSamples(2);
-
+    
     while (manager.isRunning()) {
 
         manager.Update();
